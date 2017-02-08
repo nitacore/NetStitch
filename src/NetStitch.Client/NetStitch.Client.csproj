@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup Label="Configuration">
+    <AssemblyName>NetStitch.Client</AssemblyName>
+    <RootNamespace>NetStitch.Client</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputType>library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputType>library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NETStandard.Library" Version="1.6" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
+    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.6.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetStitch.Common\NetStitch.Common.csproj" />
+  </ItemGroup>
+</Project>

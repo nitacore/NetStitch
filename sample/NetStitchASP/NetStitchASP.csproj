@@ -1,0 +1,30 @@
+﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup Label="Configuration">
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP1_0,___server___</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.0.0" />
+    <PackageReference Include="Microsoft.NETCore.App" Version="1.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.0" />
+    <PackageReference Include="NetStitch.Analyzer" Version="0.0.2-alpha" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
+    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.6.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj" />
+    <ProjectReference Include="..\..\src\NetStitch.Server\NetStitch.Server.csproj" />
+  </ItemGroup>
+  <Import Project="..\SharedInterface\SharedInterface.projitems" Label="Shared" />
+</Project>

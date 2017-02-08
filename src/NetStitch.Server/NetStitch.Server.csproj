@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputType>library</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.0" />
+    <PackageReference Include="NETStandard.Library" Version="1.6" />
+    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
+    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetStitch.Common\NetStitch.Common.csproj" />
+  </ItemGroup>
+</Project>

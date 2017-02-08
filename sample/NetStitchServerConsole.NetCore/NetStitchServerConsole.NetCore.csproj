@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <DefineConstants>TRACE;___server___</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Server.WebListener" Version="1.1.0" />
+    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
+    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.6.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj" />
+    <ProjectReference Include="..\..\src\NetStitch.Server\NetStitch.Server.csproj" />
+  </ItemGroup>
+  <Import Project="..\SharedInterface\SharedInterface.projitems" Label="Shared" />
+</Project>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>NetStitch.Server</id>
+        <version>0.0.6-alpha</version>
+        <title>NetStitch.Server</title>
+        <authors>nitacore</authors>
+        <owners>nitacore</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>NetStitch</description>
+        <language>en-US</language>
+        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <tags></tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5.1">
+                <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="1.0.0" />
+                <dependency id="Microsoft.AspNetCore.Http.Features" version="1.0.0" />
+                <dependency id="Zeroformatter" version="1.6.2" />
+                <dependency id="ZeroFormatter.Interfaces" version="1.6.2" />
+            </group>
+            <group targetFramework=".NETStandard1.6">
+                <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="1.0.0" />
+                <dependency id="Microsoft.AspNetCore.Http.Features" version="1.0.0" />
+                <dependency id="Zeroformatter" version="1.6.2" />
+                <dependency id="ZeroFormatter.Interfaces" version="1.6.2" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\src\NetStitch.Server.Net451\bin\Release\NetStitch.Common.dll" target="lib\net4.5.1" />
+        <file src="..\src\NetStitch.Server.Net451\bin\Release\NetStitch.Server.dll" target="lib\net4.5.1" />
+        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.6\NetStitch.Common.dll" target="lib\netstandard1.6" />
+        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.6\NetStitch.Server.dll" target="lib\netstandard1.6" />
+        <file src="NetStitch.Server.targets" target="build" />
+    </files>
+</package>

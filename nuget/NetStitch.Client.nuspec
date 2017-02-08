@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>NetStitch.Client</id>
+        <version>0.0.6-alpha</version>
+        <title>NetStitch.Client</title>
+        <authors>nitacore</authors>
+        <owners>nitacore</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>NetStitch</description>
+        <language>en-US</language>
+        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <tags></tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5">
+                <dependency id="Zeroformatter" version="1.6.2" />
+                <dependency id="ZeroFormatter.Interfaces" version="1.6.2" />
+            </group>
+            <group targetFramework=".NETStandard1.6">
+                <dependency id="Zeroformatter" version="1.6.2" />
+                <dependency id="ZeroFormatter.Interfaces" version="1.6.2" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\src\NetStitch.Client.Net45\bin\Release\NetStitch.Common.dll" target="lib\net4.5" />
+        <file src="..\src\NetStitch.Client.Net45\bin\Release\NetStitch.Client.dll" target="lib\net4.5" />
+        <file src="..\src\NetStitch.Client\bin\Release\netstandard1.6\NetStitch.Common.dll" target="lib\netstandard1.6" />
+        <file src="..\src\NetStitch.Client\bin\Release\netstandard1.6\NetStitch.Client.dll" target="lib\netstandard1.6" />
+    </files>
+</package>
