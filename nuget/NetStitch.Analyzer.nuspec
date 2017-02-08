@@ -2,10 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>NetStitch.Analyzer</id>
-        <version>0.0.2-alpha</version>
+        <version>0.0.3-alpha</version>
         <title>NetStitch.Analyzer</title>
         <authors>nitacore</authors>
         <owners>nitacore</owners>
+        <projectUrl>https://github.com/nitacore/NetStitch</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Analyzer of NetStitch</description>
         <language>en-US</language>

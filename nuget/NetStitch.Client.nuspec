@@ -2,15 +2,16 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>NetStitch.Client</id>
-        <version>0.0.6-alpha</version>
+        <version>0.1.0-alpha</version>
         <title>NetStitch.Client</title>
         <authors>nitacore</authors>
         <owners>nitacore</owners>
+        <projectUrl>https://github.com/nitacore/NetStitch</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>NetStitch</description>
+        <description>NetStitch is a Http RPC Framework built on .NetFramework/.NETCore.</description>
         <language>en-US</language>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-        <tags></tags>
+        <tags>RPC</tags>
         <dependencies>
             <group targetFramework=".NETFramework4.5">
                 <dependency id="Zeroformatter" version="1.6.2" />
