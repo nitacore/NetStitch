@@ -67,7 +67,7 @@ namespace NetStitch.Analayzer
             })
             .Where(x => {
                 return !x.methodSymbol.GetAttributes().Any(attr => attr.AttributeClass.Name == "OperationAttribute");
-                })
+            })
             .Where(x => x.returnType != null)
             .Select(x =>
             {
@@ -173,12 +173,21 @@ namespace NetStitch.Analayzer
                     SyntaxFactory.Whitespace("    " + "    "),
                     SyntaxFactory.DisabledText(updatedmethod.Identifier.Text),
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
             if (updatedmethod.ParameterList.Parameters.Count == 0)
             {
-                //Parameter is Nothing
+                /*
+                 * #if !___server___
+                 *      System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+                 * #endif
+                 */
                 updatedmethod = updatedmethod.AddParameterListParameters(
                 SyntaxFactory.Parameter(
                     SyntaxFactory.Identifier("cancellationToken")
@@ -186,7 +195,9 @@ namespace NetStitch.Analayzer
                     .WithTrailingTrivia(SyntaxFactory.Whitespace(" "))
                 )
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
-                .WithType(SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                .WithType(
+                    SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                    .WithLeadingTrivia(SyntaxFactory.Whitespace("    " + "    "))
                 .WithDefault(
                     SyntaxFactory.EqualsValueClause(
                         SyntaxFactory.DefaultExpression(
@@ -197,16 +208,27 @@ namespace NetStitch.Analayzer
                 )
                 .WithLeadingTrivia(
                     SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                    SyntaxFactory.EndOfLine("\r\n")
+                    SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    ")
                 )
                 .WithTrailingTrivia(
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
             }
             else
             {
+                /*
+                 * #if !___server___
+                 *     , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+                 * #endif
+                 */
                 updatedmethod = updatedmethod.AddParameterListParameters(
                 SyntaxFactory.Parameter(
                     SyntaxFactory.Identifier("cancellationToken")
@@ -214,7 +236,9 @@ namespace NetStitch.Analayzer
                     .WithTrailingTrivia(SyntaxFactory.Whitespace(" "))
                 )
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
-                .WithType(SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                .WithType(
+                    SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                    .WithLeadingTrivia(SyntaxFactory.Whitespace("    " + "    "))
                 .WithDefault(
                     SyntaxFactory.EqualsValueClause(
                         SyntaxFactory.DefaultExpression(
@@ -226,7 +250,12 @@ namespace NetStitch.Analayzer
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
                 .WithTrailingTrivia(
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
                 var commaToken = updatedmethod.ParameterList.ChildTokens().Where(x => x.IsKind(SyntaxKind.CommaToken)).Last();
@@ -234,7 +263,8 @@ namespace NetStitch.Analayzer
                 var newToken = commaToken.WithLeadingTrivia(
                     SyntaxFactory.Whitespace("\r\n"),
                     SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                    SyntaxFactory.EndOfLine("\r\n")
+                    SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    ")
                     );
 
                 var newParameterList = updatedmethod.ParameterList.ReplaceToken(commaToken, newToken);
@@ -264,7 +294,11 @@ namespace NetStitch.Analayzer
 
             if (updatedmethod.ParameterList.Parameters.Count == 0)
             {
-                //Parameter is Nothing
+                /*
+                 * #if !___server___
+                 *      System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+                 * #endif
+                 */
                 updatedmethod = updatedmethod.AddParameterListParameters(
                 SyntaxFactory.Parameter(
                     SyntaxFactory.Identifier("cancellationToken")
@@ -272,7 +306,9 @@ namespace NetStitch.Analayzer
                     .WithTrailingTrivia(SyntaxFactory.Whitespace(" "))
                 )
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
-                .WithType(SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                .WithType(
+                    SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                    .WithLeadingTrivia(SyntaxFactory.Whitespace("    " + "    "))
                 .WithDefault(
                     SyntaxFactory.EqualsValueClause(
                         SyntaxFactory.DefaultExpression(
@@ -283,16 +319,27 @@ namespace NetStitch.Analayzer
                 )
                 .WithLeadingTrivia(
                     SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                    SyntaxFactory.EndOfLine("\r\n")
+                    SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    ")
                 )
                 .WithTrailingTrivia(
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
             }
             else
             {
+                /*
+                 * #if !___server___
+                 *     , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+                 * #endif
+                 */
                 updatedmethod = updatedmethod.AddParameterListParameters(
                 SyntaxFactory.Parameter(
                     SyntaxFactory.Identifier("cancellationToken")
@@ -300,7 +347,9 @@ namespace NetStitch.Analayzer
                     .WithTrailingTrivia(SyntaxFactory.Whitespace(" "))
                 )
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
-                .WithType(SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                .WithType(
+                    SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                    .WithLeadingTrivia(SyntaxFactory.Whitespace("    " + "    "))
                 .WithDefault(
                     SyntaxFactory.EqualsValueClause(
                         SyntaxFactory.DefaultExpression(
@@ -312,7 +361,12 @@ namespace NetStitch.Analayzer
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
                 .WithTrailingTrivia(
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
                 var commaToken = updatedmethod.ParameterList.ChildTokens().Where(x => x.IsKind(SyntaxKind.CommaToken)).Last();
@@ -320,7 +374,8 @@ namespace NetStitch.Analayzer
                 var newToken = commaToken.WithLeadingTrivia(
                     SyntaxFactory.Whitespace("\r\n"),
                     SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                    SyntaxFactory.EndOfLine("\r\n")
+                    SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    ")
                     );
 
                 var newParameterList = updatedmethod.ParameterList.ReplaceToken(commaToken, newToken);
@@ -366,14 +421,21 @@ namespace NetStitch.Analayzer
                 SyntaxFactory.GenericName(
                     SyntaxFactory.Identifier("Task"),
                     SyntaxFactory.TypeArgumentList(
-                        SyntaxFactory.Token(SyntaxKind.LessThanToken) //<
-                            .WithTrailingTrivia(SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false))),
-                        SyntaxFactory.SeparatedList(new[] { targetMethod.ReturnType }),
+                        SyntaxFactory.Token(SyntaxKind.LessThanToken), //<
+                        SyntaxFactory.SeparatedList(new[] {
+                            targetMethod.ReturnType
+                            .WithLeadingTrivia(
+                                SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false)),
+                                SyntaxFactory.EndOfLine("\r\n"),
+                                SyntaxFactory.Whitespace("    " + "    ")
+                            )
+                        }),
                         SyntaxFactory.Token(SyntaxKind.GreaterThanToken)
                             .WithLeadingTrivia(
-                                SyntaxFactory.EndOfLine("\r\n"),
+                                //SyntaxFactory.EndOfLine("\r\n"),
                                 SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                                SyntaxFactory.EndOfLine("\r\n")
+                                SyntaxFactory.EndOfLine("\r\n"),
+                                SyntaxFactory.Whitespace("    " + "    ")
                             )
                             .WithTrailingTrivia(
                                 SyntaxFactory.EndOfLine("\r\n"),
@@ -407,20 +469,31 @@ namespace NetStitch.Analayzer
                 .WithLeadingTrivia(
                     SyntaxFactory.Whitespace(" "),
                     SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                    SyntaxFactory.EndOfLine("\r\n")
+                    SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    ")
                 )
                 .WithTrailingTrivia(
                     SyntaxFactory.EndOfLine("\r\n"),
                     SyntaxFactory.Trivia(SyntaxFactory.ElseDirectiveTrivia(false, false)),
                     SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    "),
                     SyntaxFactory.DisabledText(updatedmethod.Identifier.Text),
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
             if (updatedmethod.ParameterList.Parameters.Count == 0)
             {
-                //Parameter is Nothing
+                /*
+                 * #if !___server___
+                 *      System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+                 * #endif
+                 */
                 updatedmethod = updatedmethod.AddParameterListParameters(
                 SyntaxFactory.Parameter(
                     SyntaxFactory.Identifier("cancellationToken")
@@ -428,7 +501,9 @@ namespace NetStitch.Analayzer
                     .WithTrailingTrivia(SyntaxFactory.Whitespace(" "))
                 )
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
-                .WithType(SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                .WithType(
+                    SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                    .WithLeadingTrivia(SyntaxFactory.Whitespace("    " + "    "))
                 .WithDefault(
                     SyntaxFactory.EqualsValueClause(
                         SyntaxFactory.DefaultExpression(
@@ -439,16 +514,27 @@ namespace NetStitch.Analayzer
                 )
                 .WithLeadingTrivia(
                     SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                    SyntaxFactory.EndOfLine("\r\n")
+                    SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    ")
                 )
                 .WithTrailingTrivia(
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
             }
             else
             {
+                /*
+                 * #if !___server___
+                 *     , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+                 * #endif
+                 */
                 updatedmethod = updatedmethod.AddParameterListParameters(
                 SyntaxFactory.Parameter(
                     SyntaxFactory.Identifier("cancellationToken")
@@ -456,7 +542,9 @@ namespace NetStitch.Analayzer
                     .WithTrailingTrivia(SyntaxFactory.Whitespace(" "))
                 )
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
-                .WithType(SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                .WithType(
+                    SyntaxFactory.ParseTypeName(typeof(CancellationToken).FullName))
+                    .WithLeadingTrivia(SyntaxFactory.Whitespace("    " + "    "))
                 .WithDefault(
                     SyntaxFactory.EqualsValueClause(
                         SyntaxFactory.DefaultExpression(
@@ -468,7 +556,12 @@ namespace NetStitch.Analayzer
                 .WithLeadingTrivia(SyntaxFactory.Whitespace(" "))
                 .WithTrailingTrivia(
                     SyntaxFactory.EndOfLine("\r\n"),
-                    SyntaxFactory.Trivia(SyntaxFactory.EndIfDirectiveTrivia(false).WithTrailingTrivia(SyntaxFactory.EndOfLine("\r\n")))
+                    SyntaxFactory.Trivia(
+                        SyntaxFactory.EndIfDirectiveTrivia(false)
+                        .WithTrailingTrivia(
+                            SyntaxFactory.EndOfLine("\r\n"),
+                            SyntaxFactory.Whitespace("    " + "    ")
+                        ))
                 ));
 
                 var commaToken = updatedmethod.ParameterList.ChildTokens().Where(x => x.IsKind(SyntaxKind.CommaToken)).Last();
@@ -476,7 +569,8 @@ namespace NetStitch.Analayzer
                 var newToken = commaToken.WithLeadingTrivia(
                     SyntaxFactory.Whitespace("\r\n"),
                     SyntaxFactory.Trivia(SyntaxFactory.IfDirectiveTrivia(SyntaxFactory.IdentifierName("!___server___"), false, false, false)),
-                    SyntaxFactory.EndOfLine("\r\n")
+                    SyntaxFactory.EndOfLine("\r\n"),
+                    SyntaxFactory.Whitespace("    " + "    ")
                     );
 
                 var newParameterList = updatedmethod.ParameterList.ReplaceToken(commaToken, newToken);
