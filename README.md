@@ -16,7 +16,7 @@ NetStitch.Server Packages
   ├─build
   │  └NetStitch.Server.targets
   └─lib
-      └DLL's
+     └DLLs
 </pre>
 
 ####NetStitch.Server.targets
@@ -28,8 +28,6 @@ NetStitch.Server Packages
   </PropertyGroup>
 </Project>
 ```
-
-
 
 ###Usage
 1.Add ASP.Net Core StartUp.
@@ -142,7 +140,7 @@ Highlight with color
 ###Analyzer and CodeFix
 NetStitch are Supported Analyzer and Codefix.
 
-![netstitchcodefix](https://cloud.githubusercontent.com/assets/12636774/22738784/3149b278-ee4c-11e6-82bd-5d88b762d212.gif)
+![codefix](https://cloud.githubusercontent.com/assets/12636774/22853926/877a0e12-f0a5-11e6-9823-3c561165fdb6.gif)
 
 (Although it is still incomplete)
 
