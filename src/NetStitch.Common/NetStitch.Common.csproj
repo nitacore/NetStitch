@@ -1,15 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-  <PropertyGroup Label="Configuration">
-    <RootNamespace>NetStitch</RootNamespace>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <OutputTypeEx>library</OutputTypeEx>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputType>Library</OutputType>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="NETStandard.Library" Version="1.6" />
-  </ItemGroup>
+
 </Project>

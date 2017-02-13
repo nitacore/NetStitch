@@ -12,52 +12,48 @@ namespace SharedInterface
     [NetStitchContract]
     public interface IComplexType
     {
-        [Operation("83576334-4631-44df-a63b-f43a53528551")]
+        [NetStitch.Operation("a885e7c2-4305-4d2c-8428-9936125641a7")]
 #if !___server___
         Task<
 #endif
-
         MyClass
 #if !___server___
->
+        >
 #endif
 #if !___server___
-EchoAsync
+        EchoAsync
 #else
-Echo
+        Echo
 #endif
-(MyClass myClass
+        (MyClass myClass
 #if !___server___
-, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-);
-
+        );
     }
 
     [NetStitchContract]
     public interface IEcho
     {
-
-        [Operation("548aac9b-e7c3-4b78-a4d7-0bbfa0a8a2f4")]
+        [NetStitch.Operation("d1ae3ebb-1743-46d7-acc7-1f4afc0f7592")]
 #if !___server___
         Task<
 #endif
         int
 #if !___server___
->
+        >
 #endif
 #if !___server___
-SumAsync
+        SumAsync
 #else
-Sum
+        Sum
 #endif
-(int[] array
+        (int[] array
 #if !___server___
-, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-);
-
-        [Operation("5000")]
+        );
+        [NetStitch.Operation("22b39868-64d6-4ac5-944e-d30d937c3e18")]
 #if !___server___
         Task<
 #endif
@@ -66,22 +62,22 @@ Sum
         >
 #endif
 #if !___server___
-          EchoAsync
+        EchoAsync
 #else
-          Echo
+        Echo
 #endif
-        ( string name, int x, int y, MyEnum e
+        (string name, int x, int y, MyEnum e
 #if !___server___
-            , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
+
     }
 
     [NetStitchContract]
     public interface IPerf
     {
-        // MyClass Foo(string a, int? x, int[] array);
-        [Operation("fuga")]
+        [NetStitch.Operation("6afa8955-4f73-4a45-8795-b980763a7182")]
 #if !___server___
         Task<
 #endif
@@ -89,53 +85,47 @@ Sum
 #if !___server___
         >
 #endif
-
 #if !___server___
-          FooAsync(
+        FooAsync
 #else
-          Foo(
+        Foo
 #endif
-            string a, int? x, int[] array
+        (string a, int? x, int[] array
 #if !___server___
-            , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
-#endif
-
-        );
-
-        //Task<int> HogeAsync(string a, int x, MyEnum e);
-        [Operation("hoge")]
-        Task<int> HogeAsync(string a, int x, MyEnum e = MyEnum.B
-#if !___server___
-            , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
 
-        //void Fuga();
-        [Operation("3")]
+        [NetStitch.Operation("eb28bf13-ce0b-41ee-a4dc-28c456687707")]
+        Task<int> HogeAsync(string a, int x, MyEnum e
+#if !___server___
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+#endif
+        );
+
+        [NetStitch.Operation("019ec065-10b2-43ed-85a2-57b27aab9762")]
 #if !___server___
         Task
 #else
         void
 #endif
-
 #if !___server___
-          FugaAsync(
+        FugaAsync
 #else
-          Fuga(
+        Fuga
 #endif
-
+        (
 #if !___server___
-            System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+        System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
 
-        //Task VoidTask();
-        [Operation("4")]
+        [NetStitch.Operation("bb1934e2-f82e-41d3-845d-3bface2dae8d")]
         Task VoidTaskAsync(
 #if !___server___
-            System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+        System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-            );
+        );
 
     }
 
