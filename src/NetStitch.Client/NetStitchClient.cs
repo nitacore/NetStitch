@@ -19,6 +19,11 @@ namespace NetStitch
 
         private readonly IDictionary<Type, object> operationDic = new Dictionary<Type, object>();
 
+        static NetStitchClient()
+        {
+            ZeroFormatter.Formatters.Formatter.AppendFormatterResolver(t => ZeroFormatterExtensions.ValueTupleFormatterResolver(t));
+        }
+
         public NetStitchClient(string endpoint)
                 : this(endpoint, new HttpClient())
             { }

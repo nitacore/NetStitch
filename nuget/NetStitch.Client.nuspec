@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>NetStitch.Client</id>
-        <version>0.1.0-alpha</version>
+        <version>0.1.1-alpha</version>
         <title>NetStitch.Client</title>
         <authors>nitacore</authors>
         <owners>nitacore</owners>
@@ -14,10 +14,12 @@
         <tags>RPC</tags>
         <dependencies>
             <group targetFramework=".NETFramework4.5">
+                <dependency id="System.ValueTuple" version="4.3.0" />
                 <dependency id="Zeroformatter" version="1.6.2" />
                 <dependency id="ZeroFormatter.Interfaces" version="1.6.2" />
             </group>
             <group targetFramework=".NETStandard1.6">
+                <dependency id="System.ValueTuple" version="4.3.0" />
                 <dependency id="Zeroformatter" version="1.6.2" />
                 <dependency id="ZeroFormatter.Interfaces" version="1.6.2" />
             </group>

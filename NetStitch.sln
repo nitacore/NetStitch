@@ -37,8 +37,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Client.Net45", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitchClientConsole.NetCore", "sample\NetStitchClientConsole.NetCore\NetStitchClientConsole.NetCore.csproj", "{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTuple", "SharedProjectValueTuple\SharedProjectValueTuple.shproj", "{5C6338FA-06E1-4DA0-BC63-3C9CC786EB3A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SharedProjectValueTuple\SharedProjectValueTuple.projitems*{5c6338fa-06e1-4da0-bc63-3c9cc786eb3a}*SharedItemsImports = 13
 		sample\SharedInterface\SharedInterface.projitems*{c380025c-46e3-44ef-8f85-8e737c787453}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -213,5 +216,6 @@ Global
 		{51DB200C-315B-4F94-B28B-CACB52EABEA1} = {DCF3907D-B28A-41CF-BB12-BA8AAE55A400}
 		{3D963B29-7DFA-491B-BA00-AAD5764794A2} = {DCF3907D-B28A-41CF-BB12-BA8AAE55A400}
 		{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
+		{5C6338FA-06E1-4DA0-BC63-3C9CC786EB3A} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 	EndGlobalSection
 EndGlobal
