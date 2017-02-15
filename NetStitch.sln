@@ -37,11 +37,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Client.Net45", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitchClientConsole.NetCore", "sample\NetStitchClientConsole.NetCore\NetStitchClientConsole.NetCore.csproj", "{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTuple", "SharedProjectValueTuple\SharedProjectValueTuple.shproj", "{5C6338FA-06E1-4DA0-BC63-3C9CC786EB3A}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTuple", "sample\SharedProjectValueTuple\SharedProjectValueTuple.shproj", "{5C6338FA-06E1-4DA0-BC63-3C9CC786EB3A}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		SharedProjectValueTuple\SharedProjectValueTuple.projitems*{5c6338fa-06e1-4da0-bc63-3c9cc786eb3a}*SharedItemsImports = 13
+		sample\SharedProjectValueTuple\SharedProjectValueTuple.projitems*{5c6338fa-06e1-4da0-bc63-3c9cc786eb3a}*SharedItemsImports = 13
 		sample\SharedInterface\SharedInterface.projitems*{c380025c-46e3-44ef-8f85-8e737c787453}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -12,6 +12,6 @@
 
   <Import Project="..\SharedInterface\SharedInterface.projitems" Label="Shared" />
 
-  <Import Project="..\..\SharedProjectValueTuple\SharedProjectValueTuple.projitems" Label="Shared" />
+  <Import Project="..\SharedProjectValueTuple\SharedProjectValueTuple.projitems" Label="Shared" />
 
 </Project>
