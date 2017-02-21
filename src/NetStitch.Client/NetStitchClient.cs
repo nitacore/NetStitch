@@ -30,9 +30,8 @@ namespace NetStitch
 
         public NetStitchClient(string endpoint, HttpClient client)
         {
-            this.endpoint = endpoint.TrimEnd('/') + "/";
+            this.endpoint = endpoint.TrimEnd('/');
             this.client = client;
-            ClientInitialized();
         }
 
         public T Create<T>()
@@ -44,7 +43,7 @@ namespace NetStitch
             if (!operationDic.TryGetValue(type, out result))
             {
                 var ctorInfo = StubType<T>.Value.GetConstructor(new Type[] { typeof(NetStitchClient) });
-                result = (T)ctorInfo.Invoke(new object[] { this });
+                result = ctorInfo.Invoke(new object[] { this });
                 lock (operationDic)
                 {
                     if (!operationDic.ContainsKey(type))
@@ -52,10 +51,6 @@ namespace NetStitch
                 }
             }
             return (T)result;
-        }
-
-        protected virtual void ClientInitialized()
-        {
         }
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
