@@ -1,19 +1,11 @@
 using System;
-using System.Linq;
 using Xunit;
-using NetStitch;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using NetStitch.Server;
-using NetStitch.Option;
 using System.Reflection;
 
 namespace NetStitch.Tests

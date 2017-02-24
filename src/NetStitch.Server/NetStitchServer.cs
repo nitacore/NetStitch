@@ -45,7 +45,7 @@ namespace NetStitch.Server
                     return new
                     {
                         interfaceType = x,
-                        classType = types.Where(t => t.GetInterfaces().Any(t2 => t2 == x)).SingleOrDefault()
+                        targetType = types.Where(t => t.GetInterfaces().Any(t2 => t2 == x)).SingleOrDefault()
                     };
                 }
                 catch (InvalidOperationException)
@@ -54,28 +54,52 @@ namespace NetStitch.Server
                 }
 
             })
-            .Where(x => x.classType != null)
-            .Where(x => x.classType.GetTypeInfo().IsAbstract == false)
+            .Where(x => x.targetType != null)
+            .Where(x => x.targetType.GetTypeInfo().IsAbstract == false)
+            //.Select(x => x.classType.GetInterfaceMap(x.interfaceType)) 
             .SelectMany(
-             x => x.interfaceType.GetMethods(),
+            //x => x.TargetMethods.Zip(x.InterfaceMethods, (targetMethod, interfaceMethod) => new { targetMethod, interfaceMethod }),
+             x => x.interfaceType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance),
             (x, methodInfo) =>
             {
+                var targetMethod = x.targetType.GetTypeInfo().GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
+                .Single(m => IsSameNamesapceAndMethodName(m, methodInfo) &&
+                m.CallingConvention == methodInfo.CallingConvention &&
+                m.ReturnType == methodInfo.ReturnType &&
+                m.GetGenericArguments().SequenceEqual(methodInfo.GetGenericArguments()) &&
+                m.GetParameters().Select(p => p.ParameterType).SequenceEqual(methodInfo.GetParameters().Select(p => p.ParameterType)));
                 return new
                 {
-                    x.classType,
+                    x.targetType,
                     x.interfaceType,
-                    methodInfo,
+                    targetMethod,
+                    interfaceMethod = methodInfo,
                 };
             });
 
             foreach (var element in seq)
             {
-                var op = new OperationController(element.classType, element.interfaceType, element.methodInfo);
+                var op = new OperationController(element.targetType, element.interfaceType, element.targetMethod, element.interfaceMethod);
                 dic.Add(op.OperationID, op);
             }
 
             this.option.Logger.ServerSetupCompleted(tm.Elapsed);
 
+        }
+
+        private bool IsSameNamesapceAndMethodName(MethodInfo targetMethod, MethodInfo interfaceMethod)
+        {
+            string name;
+            var targetMethodSplit = targetMethod.Name.Split('.');
+            if (targetMethodSplit.Length > 1)
+            {
+                name = $"{interfaceMethod.DeclaringType.ToString()}.{interfaceMethod.Name}";
+            }
+            else
+            {
+                name = interfaceMethod.Name;
+            }
+            return targetMethod.Name == name;
         }
 
         public async Task OperationExecuteAsync(HttpContext httpContext)

@@ -13,9 +13,10 @@ namespace NetStitch.Server
         public static async Task AsyncExecute<TReturnType>(HttpContext httpContext, Task<TReturnType> task)
         {
             TReturnType result = await task.ConfigureAwait(false);
-            httpContext.Response.ContentType = "application/octet-stream";
-            httpContext.Response.StatusCode = HttpStatus.OK;
-            ZeroFormatterSerializer.Serialize<TReturnType>(httpContext.Response.Body, result);
+            HttpResponse responce = httpContext.Response;
+            responce.ContentType = "application/octet-stream";
+            responce.StatusCode = HttpStatus.OK;
+            ZeroFormatterSerializer.Serialize<TReturnType>(responce.Body, result);
         }
         public static async Task AsyncExecute(HttpContext httpContext, Task task)
         {
@@ -24,9 +25,10 @@ namespace NetStitch.Server
         }
         public static void Execute<TReturnType>(HttpContext httpContext, TReturnType result)
         {
-            httpContext.Response.ContentType = "application/octet-stream";
-            httpContext.Response.StatusCode = HttpStatus.OK;
-            ZeroFormatterSerializer.Serialize<TReturnType>(httpContext.Response.Body, result);
+            HttpResponse responce = httpContext.Response;
+            responce.ContentType = "application/octet-stream";
+            responce.StatusCode = HttpStatus.OK;
+            ZeroFormatterSerializer.Serialize<TReturnType>(responce.Body, result);
         }
     }
 }

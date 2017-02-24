@@ -31,8 +31,11 @@ namespace NetStitchServerConsole
             }
         }
 
-        public class Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType
+        public struct Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType, NetStitch.Server.IHttpContext
         {
+
+            public HttpContext Context { get; set; }
+
             public MyClass Echo(MyClass myClass)
             {
                 return myClass;

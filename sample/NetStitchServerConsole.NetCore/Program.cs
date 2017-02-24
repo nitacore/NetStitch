@@ -27,19 +27,14 @@ class Program
         }
     }
 
-    public class Tally : IEcho, SharedProjectValueTuple.ISharedInterfaceValueTuple
+    public struct Tally : IEcho, SharedProjectValueTuple.ISharedInterfaceValueTuple, SharedInterface.IComplexType
     {
-        public MyClass Echo(string name, int x, int y, MyEnum e)
-        {
-            return new MyClass() { Name = name, Sum = (x + y) * (int)e };
-        }
 
-        public MyClass Echo(MyClass myClass)
-        {
-            throw new NotImplementedException();
-        }
+        MyClass IEcho.Echo(string name, int x, int y, MyEnum e) => new MyClass() { Name = name, Sum = (x + y) * (int)e };
 
-        public int Sum(int[] array) => array.Sum();
+        MyClass IComplexType.Echo(MyClass myClass) => new MyClass() { Name = myClass.Name, Sum = 1 };
+
+        int IEcho.Sum(int[] array) => array.Sum();
 
         (int sum, int count) ISharedInterfaceValueTuple.Tally(System.Collections.Generic.IList<(int a, int b)> tes)
             => (tes.Sum(x => x.a + x.b), tes.Count);

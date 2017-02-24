@@ -72,22 +72,22 @@ namespace NetStitch.Server
 
         }
 
-        public OperationController(Type classType, Type interfaceType, MethodInfo methodInfo)
+        public OperationController(Type targetType, Type interfaceType, MethodInfo targetMethodInfo, MethodInfo interfaceMethodInfo)
         {
 
-            this.ClassType = classType;
+            this.ClassType = targetType;
             this.InterfaceType = interfaceType;
-            this.MethodInfo = methodInfo;
+            this.MethodInfo = targetMethodInfo;
 
-            this.OperationID = ((OperationAttribute)methodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
+            this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
 
-            bool requiresHttpContext = classType.GetInterfaces().Any(x => x == typeof(IHttpContext));
+            bool requiresHttpContext = targetType.GetInterfaces().Any(x => x == typeof(IHttpContext));
 
-            bool operationIsAsyncType = typeof(Task).IsAssignableFrom(methodInfo.ReturnType);
+            bool operationIsAsyncType = typeof(Task).IsAssignableFrom(targetMethodInfo.ReturnType);
 
-            bool operationIsAsyncFunction = operationIsAsyncType && methodInfo.ReturnType.GenericTypeArguments.Length != 0;
+            bool operationIsAsyncFunction = operationIsAsyncType && targetMethodInfo.ReturnType.GenericTypeArguments.Length != 0;
 
-            Type asyncRetunType = methodInfo.ReturnType.GenericTypeArguments.FirstOrDefault();
+            Type asyncRetunType = targetMethodInfo.ReturnType.GenericTypeArguments.FirstOrDefault();
 
             Type parameterStructType = CreateParameterSturctType();
 
@@ -103,8 +103,8 @@ namespace NetStitch.Server
 
             // new Class() or new Class() { Context = Context }
             var newClass = requiresHttpContext ?
-            Expression.MemberInit(Expression.New(classType), bindContext) :
-            Expression.MemberInit(Expression.New(classType));
+            Expression.MemberInit(Expression.New(targetType), bindContext) :
+            Expression.MemberInit(Expression.New(targetType));
 
             // Context.Request.Body
             var request = Expression.Property(context, nameof(HttpContext.Request));
@@ -116,20 +116,17 @@ namespace NetStitch.Server
             var assign = Expression.Assign(obj, deserialize);
 
             // obj.field1, obj.field2, ...
-            var args = methodInfo.GetParameters().Select(x => Expression.Field(obj, x.Name)).ToArray();
+            var args = targetMethodInfo.GetParameters().Select(x => Expression.Field(obj, x.Name)).ToArray();
 
-            // ((Interface)new Class())
-            var convertInterface = Expression.Convert(newClass, interfaceType);
-
-            // ((Interface)new Class())).Method(obj.field1, obj.field2, ...)
-            var callMethod = Expression.Call(convertInterface, methodInfo, args);
+            // new Class().Method(obj.field1, obj.field2, ...)
+            var callMethod = Expression.Call(newClass, targetMethodInfo, args);
 
             // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
-            // ((Interface)new Class())).Method(obj.field1, obj.field2, ...)
+            // new Class().Method(obj.field1, obj.field2, ...)
             var block = Expression.Block(new[] { obj }, assign, callMethod);
 
             // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
-            // AsyncExecute(((Interface)new Class())).Method(obj.field1, obj.field2, ...))
+            // AsyncExecute(new Class().Method(obj.field1, obj.field2, ...))
             if (operationIsAsyncType)
             {
                 var asyncExecuteMethodInfo = operationIsAsyncFunction ?
@@ -144,8 +141,8 @@ namespace NetStitch.Server
             else
             {
                 // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
-                // ((Interface)new Class())).Method(obj.field1, obj.field2, ...)
-                if (methodInfo.ReturnType == typeof(void))
+                // new Class().Method(obj.field1, obj.field2, ...)
+                if (targetMethodInfo.ReturnType == typeof(void))
                 {
                     var lambda = Expression.Lambda<Action<HttpContext>>(block, context);
                     this.operation = lambda.Compile();
@@ -154,10 +151,10 @@ namespace NetStitch.Server
                 else
                 {
                     // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
-                    // Execute(((Interface)new Class())).Method(obj.field1, obj.field2, ...))
+                    // Execute(new Class().Method(obj.field1, obj.field2, ...))
                     var executeMethodInfo = typeof(OperationExecuter).GetMethods()
                         .First(x => x.Name == nameof(OperationExecuter.Execute) && x.IsGenericMethod)
-                        .MakeGenericMethod(methodInfo.ReturnType);
+                        .MakeGenericMethod(targetMethodInfo.ReturnType);
                     var excecute = Expression.Call(null, executeMethodInfo, context, block);
                     var lambda = Expression.Lambda<Action<HttpContext>>(excecute, context);
                     this.operation = lambda.Compile();
