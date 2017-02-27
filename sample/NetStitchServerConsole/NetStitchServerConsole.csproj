@@ -200,7 +200,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\NetStitch.Analyzer.0.0.2-alpha\analyzers\dotnet\cs\NetStitch.Analayzer.dll" />
+    <Analyzer Include="..\..\packages\NetStitch.Analyzer.0.0.5-alpha\analyzers\dotnet\cs\NetStitch.Analayzer.dll" />
   </ItemGroup>
   <Import Project="..\SharedInterface\SharedInterface.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
