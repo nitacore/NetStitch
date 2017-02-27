@@ -12,7 +12,7 @@ namespace NetStitch.Server
 {
     public class NetStitchServer
     {
-        public readonly IDictionary<string, OperationController> dic = new Dictionary<string, OperationController>();
+        private readonly IDictionary<string, OperationController> OperationDic = new Dictionary<string, OperationController>();
 
         private readonly NetStitchOption option;
 
@@ -80,7 +80,7 @@ namespace NetStitch.Server
             foreach (var element in seq)
             {
                 var op = new OperationController(element.targetType, element.interfaceType, element.targetMethod, element.interfaceMethod);
-                dic.Add(op.OperationID, op);
+                OperationDic.Add(op.OperationID, op);
             }
 
             this.option.Logger.ServerSetupCompleted(tm.Elapsed);
@@ -105,11 +105,8 @@ namespace NetStitch.Server
         public async Task OperationExecuteAsync(HttpContext httpContext)
         {
 
-            if (httpContext.Request.Method.ToUpper() != "POST")
-                return;
-
             OperationController @operation;
-            if (!dic.TryGetValue(httpContext.Request.Path.Value.TrimStart('/'), out @operation))
+            if (!OperationDic.TryGetValue(httpContext.Request.Path.Value.TrimStart('/'), out @operation))
             {
                 //Operation Not Found
                 httpContext.Response.StatusCode = HttpStatus.NotFound;
@@ -123,8 +120,10 @@ namespace NetStitch.Server
 
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                await @operation.ExecuteAsync(httpContext).ConfigureAwait(false);
+                var operationContext = new OperationContext(httpContext, @operation);
 
+                await @operation.ExecuteAsync(operationContext).ConfigureAwait(false);
+                
                 option.Logger.OperationCompleted(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name, sw.Elapsed);
 
             }

@@ -10,22 +10,22 @@ namespace NetStitch.Server
 {
     public class OperationExecuter
     {
-        public static async Task AsyncExecute<TReturnType>(HttpContext httpContext, Task<TReturnType> task)
+        public static async Task AsyncExecute<TReturnType>(OperationContext operationContext, Task<TReturnType> task)
         {
             TReturnType result = await task.ConfigureAwait(false);
-            HttpResponse responce = httpContext.Response;
+            HttpResponse responce = operationContext.HttpContext.Response;
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
             ZeroFormatterSerializer.Serialize<TReturnType>(responce.Body, result);
         }
-        public static async Task AsyncExecute(HttpContext httpContext, Task task)
+        public static async Task AsyncExecute(OperationContext operationContext, Task task)
         {
             await task.ConfigureAwait(false);
-            httpContext.Response.StatusCode = HttpStatus.NoContent;
+            operationContext.HttpContext.Response.StatusCode = HttpStatus.NoContent;
         }
-        public static void Execute<TReturnType>(HttpContext httpContext, TReturnType result)
+        public static void Execute<TReturnType>(OperationContext operationContext, TReturnType result)
         {
-            HttpResponse responce = httpContext.Response;
+            HttpResponse responce = operationContext.HttpContext.Response;
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
             ZeroFormatterSerializer.Serialize<TReturnType>(responce.Body, result);

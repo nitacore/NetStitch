@@ -86,6 +86,9 @@
     <Compile Include="..\NetStitch.Server\NetStitchServer.cs">
       <Link>NetStitchServer.cs</Link>
     </Compile>
+    <Compile Include="..\NetStitch.Server\OperationContext.cs">
+      <Link>OperationContext.cs</Link>
+    </Compile>
     <Compile Include="..\NetStitch.Server\OperationExecuter.cs">
       <Link>OperationExecuter.cs</Link>
     </Compile>

@@ -24,10 +24,11 @@ namespace NetStitch.Server
         public readonly Type ClassType;
         public readonly Type InterfaceType;
         public readonly MethodInfo MethodInfo;
+        public readonly Type ParameterStructType;
 
         private readonly OperationType operationType;
-        private readonly Action<HttpContext> operation;
-        private readonly Func<HttpContext, Task> asyncOperation;
+        private readonly Action<OperationContext> operation;
+        private readonly Func<OperationContext, Task> asyncOperation;
 
         private Type CreateParameterSturctType()
         {
@@ -78,7 +79,7 @@ namespace NetStitch.Server
             this.ClassType = targetType;
             this.InterfaceType = interfaceType;
             this.MethodInfo = targetMethodInfo;
-
+            this.ParameterStructType = CreateParameterSturctType();
             this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
 
             bool requiresHttpContext = targetType.GetInterfaces().Any(x => x == typeof(IHttpContext));
@@ -89,17 +90,16 @@ namespace NetStitch.Server
 
             Type asyncRetunType = targetMethodInfo.ReturnType.GenericTypeArguments.FirstOrDefault();
 
-            Type parameterStructType = CreateParameterSturctType();
-
             MethodInfo deserializeMethod = typeof(ZeroFormatterSerializer).GetMethods()
                                            .First(x => x.Name == (nameof(ZeroFormatterSerializer.Deserialize)) &&
                                                        x.IsGenericMethod &&
                                                        x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream)))
-                                           .MakeGenericMethod(new Type[] { parameterStructType });
+                                           .MakeGenericMethod(new Type[] { ParameterStructType });
 
             // Context
-            var context = Expression.Parameter(typeof(HttpContext), nameof(IHttpContext.Context));
-            var bindContext = Expression.Bind(typeof(IHttpContext).GetProperty(nameof(IHttpContext.Context)), context);
+            var operationContext = Expression.Parameter(typeof(OperationContext), nameof(OperationContext));
+            var httpContext = Expression.Property(operationContext, nameof(HttpContext));
+            var bindContext = Expression.Bind(typeof(IHttpContext).GetProperty(nameof(IHttpContext.Context)), httpContext);
 
             // new Class() or new Class() { Context = Context }
             var newClass = requiresHttpContext ?
@@ -107,12 +107,12 @@ namespace NetStitch.Server
             Expression.MemberInit(Expression.New(targetType));
 
             // Context.Request.Body
-            var request = Expression.Property(context, nameof(HttpContext.Request));
+            var request = Expression.Property(httpContext, nameof(HttpContext.Request));
             var body = Expression.Property(request, nameof(HttpRequest.Body));
 
             // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
             var deserialize = Expression.Call(null, deserializeMethod, body);
-            var obj = Expression.Parameter(parameterStructType, "obj");
+            var obj = Expression.Parameter(ParameterStructType, "obj");
             var assign = Expression.Assign(obj, deserialize);
 
             // obj.field1, obj.field2, ...
@@ -133,8 +133,8 @@ namespace NetStitch.Server
                     typeof(OperationExecuter).GetMethods().First(x => x.Name == (nameof(OperationExecuter.AsyncExecute)) && x.IsGenericMethod).MakeGenericMethod(asyncRetunType) :
                     typeof(OperationExecuter).GetMethods().First(x => x.Name == (nameof(OperationExecuter.AsyncExecute)) && !x.IsGenericMethod);
 
-                var taskExecute = Expression.Call(null, asyncExecuteMethodInfo, context, block);
-                var lambda = Expression.Lambda<Func<HttpContext, Task>>(taskExecute, context);
+                var taskExecute = Expression.Call(null, asyncExecuteMethodInfo, operationContext, block);
+                var lambda = Expression.Lambda<Func<OperationContext, Task>>(taskExecute, operationContext);
                 asyncOperation = lambda.Compile();
                 this.operationType = OperationType.AsyncOperation;
             }
@@ -144,7 +144,7 @@ namespace NetStitch.Server
                 // new Class().Method(obj.field1, obj.field2, ...)
                 if (targetMethodInfo.ReturnType == typeof(void))
                 {
-                    var lambda = Expression.Lambda<Action<HttpContext>>(block, context);
+                    var lambda = Expression.Lambda<Action<OperationContext>>(block, operationContext);
                     this.operation = lambda.Compile();
                     this.operationType = OperationType.Action;
                 }
@@ -155,27 +155,27 @@ namespace NetStitch.Server
                     var executeMethodInfo = typeof(OperationExecuter).GetMethods()
                         .First(x => x.Name == nameof(OperationExecuter.Execute) && x.IsGenericMethod)
                         .MakeGenericMethod(targetMethodInfo.ReturnType);
-                    var excecute = Expression.Call(null, executeMethodInfo, context, block);
-                    var lambda = Expression.Lambda<Action<HttpContext>>(excecute, context);
+                    var excecute = Expression.Call(null, executeMethodInfo, operationContext, block);
+                    var lambda = Expression.Lambda<Action<OperationContext>>(excecute, operationContext);
                     this.operation = lambda.Compile();
                     this.operationType = OperationType.Operation;
                 }
             }
         }
 
-        public async Task ExecuteAsync(HttpContext httpcontext)
+        public async Task ExecuteAsync(OperationContext operationContext)
         {
             switch (operationType)
             {
                 case OperationType.Action:
-                    operation(httpcontext);
-                    httpcontext.Response.StatusCode = HttpStatus.NoContent;
+                    operation(operationContext);
+                    operationContext.HttpContext.Response.StatusCode = HttpStatus.NoContent;
                     break;
                 case OperationType.Operation:
-                    operation(httpcontext);
+                    operation(operationContext);
                     break;
                 case OperationType.AsyncOperation:
-                    await asyncOperation(httpcontext).ConfigureAwait(false);
+                    await asyncOperation(operationContext).ConfigureAwait(false);
                     break;
                 default:
                     throw new InvalidOperationException("operation not found");
