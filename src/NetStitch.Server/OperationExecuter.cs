@@ -23,12 +23,5 @@ namespace NetStitch.Server
             await task.ConfigureAwait(false);
             operationContext.HttpContext.Response.StatusCode = HttpStatus.NoContent;
         }
-        public static void Execute<TReturnType>(OperationContext operationContext, TReturnType result)
-        {
-            HttpResponse responce = operationContext.HttpContext.Response;
-            responce.ContentType = "application/octet-stream";
-            responce.StatusCode = HttpStatus.OK;
-            ZeroFormatterSerializer.Serialize<TReturnType>(responce.Body, result);
-        }
     }
 }

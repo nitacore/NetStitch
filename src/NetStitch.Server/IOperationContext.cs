@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NetStitch.Server
+namespace NetStitch
 {
-    public interface IHttpContext
+    public interface IOperationContext
     {
-        HttpContext Context { set; }
+        OperationContext Context { set; }
     }
 }

@@ -122,7 +122,7 @@ namespace NetStitch.Server
 
                 var operationContext = new OperationContext(httpContext, @operation);
 
-                await @operation.ExecuteAsync(operationContext).ConfigureAwait(false);
+                await @operation.OperationAsync(operationContext).ConfigureAwait(false);
                 
                 option.Logger.OperationCompleted(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name, sw.Elapsed);
 

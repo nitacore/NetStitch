@@ -198,11 +198,11 @@
     <Compile Include="..\NetStitch.Tests\EnumParameterTest.cs">
       <Link>EnumParameterTest.cs</Link>
     </Compile>
-    <Compile Include="..\NetStitch.Tests\HttpContextTest.cs">
-      <Link>HttpContextTest.cs</Link>
-    </Compile>
     <Compile Include="..\NetStitch.Tests\NullableParameterTest.cs">
       <Link>NullableParameterTest.cs</Link>
+    </Compile>
+    <Compile Include="..\NetStitch.Tests\OperationContextTest.cs">
+      <Link>OperationContextTest.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

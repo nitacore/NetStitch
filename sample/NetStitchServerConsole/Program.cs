@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SharedInterface;
 using Microsoft.AspNetCore.Http;
+using NetStitch;
 
 namespace NetStitchServerConsole
 {
@@ -31,10 +32,10 @@ namespace NetStitchServerConsole
             }
         }
 
-        public struct Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType, NetStitch.Server.IHttpContext
+        public struct Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType, NetStitch.IOperationContext
         {
 
-            public HttpContext Context { get; set; }
+            public OperationContext Context { get; set; }
 
             public MyClass Echo(MyClass myClass)
             {

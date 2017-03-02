@@ -33,6 +33,18 @@ namespace SharedInterface
     }
 
     [NetStitchContract]
+    public interface IAsyncTest
+    {
+        [NetStitch.Operation("49cace09-8ad4-4ea7-84fc-09c3582a274e")]
+        Task<int> TestAsync(int a, int b
+#if !___server___
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+#endif
+        );
+    }
+
+
+    [NetStitchContract]
     public interface IEcho
     {
         [NetStitch.Operation("d1ae3ebb-1743-46d7-acc7-1f4afc0f7592")]

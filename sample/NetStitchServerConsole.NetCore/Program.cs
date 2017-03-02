@@ -6,6 +6,9 @@ using SharedInterface;
 using System;
 using System.Linq;
 using SharedProjectValueTuple;
+using System.Threading.Tasks;
+using NetStitch;
+using NetStitch.Server;
 
 class Program
 {
@@ -23,20 +26,22 @@ class Program
     {
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseNetStitch(this.GetType(), new NetStitchOption() { Logger = new NetStitch.Logger.NetStitchConsoleLogger() });
+            app.UseNetStitch(this.GetType());
         }
     }
 
-    public struct Tally : IEcho, SharedProjectValueTuple.ISharedInterfaceValueTuple, SharedInterface.IComplexType
+    public struct Tally : IEcho, IAsyncTest, IOperationContext
     {
+        public OperationContext Context { get; set; }
+
+        public async Task<int> TestAsync(int a, int b)
+        {
+            return await Task.FromResult(a + b);
+        }
 
         MyClass IEcho.Echo(string name, int x, int y, MyEnum e) => new MyClass() { Name = name, Sum = (x + y) * (int)e };
 
-        MyClass IComplexType.Echo(MyClass myClass) => new MyClass() { Name = myClass.Name, Sum = 1 };
-
         int IEcho.Sum(int[] array) => array.Sum();
 
-        (int sum, int count) ISharedInterfaceValueTuple.Tally(System.Collections.Generic.IList<(int a, int b)> tes)
-            => (tes.Sum(x => x.a + x.b), tes.Count);
     }
 }

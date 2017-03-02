@@ -65,9 +65,6 @@
     <Compile Include="..\..\src\NetStitch.Server\HttpStatus.cs">
       <Link>HttpStatus.cs</Link>
     </Compile>
-    <Compile Include="..\..\src\NetStitch.Server\IHttpContext.cs">
-      <Link>IHttpContext.cs</Link>
-    </Compile>
     <Compile Include="..\..\src\NetStitch.Server\NetStitchBuilderExtensions.cs">
       <Link>NetStitchBuilderExtensions.cs</Link>
     </Compile>
@@ -79,6 +76,9 @@
     </Compile>
     <Compile Include="..\..\src\NetStitch.Server\OperationController.cs">
       <Link>OperationController.cs</Link>
+    </Compile>
+    <Compile Include="..\NetStitch.Server\IOperationContext.cs">
+      <Link>IOperationContext.cs</Link>
     </Compile>
     <Compile Include="..\NetStitch.Server\NetStitchLogger.cs">
       <Link>NetStitchLogger.cs</Link>

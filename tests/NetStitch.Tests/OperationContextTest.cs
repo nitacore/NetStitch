@@ -12,10 +12,10 @@ using NetStitch.Server;
 
 namespace NetStitch.Tests
 {
-    public class HttpContextTest
+    public class OperationContextTest
     {
         [Fact]
-        public async Task HttpContext()
+        public async Task OperationContext()
         {
             var config = new ConfigurationBuilder().Build();
 
@@ -26,27 +26,27 @@ namespace NetStitch.Tests
             using (var server = new TestServer(host))
             {
                 var client = server.CreateClient();
-                var stub = new NetStitchClient("http://localhost/", client).Create<client.IHttpContextTest>();
+                var stub = new NetStitchClient("http://localhost/", client).Create<client.IOperationContext>();
                 var result = await stub.HttpContextTestAsync("test");
                 Assert.Equal(result, "test");
             }
         }
     }
-    public class HttpContextTests : server.IHttpContextTest, IHttpContext
+    public class OperationContextTests : server.IOperationContextTest, IOperationContext
     {
-        public HttpContext Context { get; set; }
+        public OperationContext Context { get; set; }
 
         public string HttpContextTest(string myString)
         {
-            Context.Items.Add("a", myString);
+            Context.HttpContext.Items.Add("a", myString);
 
-            return Context.Items["a"].ToString();
+            return Context.HttpContext.Items["a"].ToString();
         }
     }
     namespace client
     {
         [NetStitchContract]
-        public interface IHttpContextTest
+        public interface IOperationContext
         {
             [Operation("HttpContextTest")]
             Task<string> HttpContextTestAsync(
@@ -58,7 +58,7 @@ namespace NetStitch.Tests
     namespace server
     {
         [NetStitchContract]
-        public interface IHttpContextTest
+        public interface IOperationContextTest
         {
             [Operation("HttpContextTest")]
             string HttpContextTest(
