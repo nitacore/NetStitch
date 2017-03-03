@@ -84,7 +84,7 @@ namespace NetStitch.Server
             this.ParameterStructType = CreateParameterSturctType();
             this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
 
-            bool requiresHttpContext = targetType.GetInterfaces().Any(x => x == typeof(IOperationContext));
+            bool requiresOperationContext = targetType.GetInterfaces().Any(x => x == typeof(IOperationContext));
 
             bool operationIsAsyncType = typeof(Task).IsAssignableFrom(targetMethodInfo.ReturnType);
 
@@ -102,7 +102,7 @@ namespace NetStitch.Server
             var bindContext = Expression.Bind(typeof(IOperationContext).GetProperty(nameof(IOperationContext.Context)), operationContext);
 
             // new Class() or new Class() { Context = Context }
-            var newClass = requiresHttpContext ?
+            var newClass = requiresOperationContext ?
             Expression.MemberInit(Expression.New(targetType), bindContext) :
             Expression.MemberInit(Expression.New(targetType));
 
@@ -146,7 +146,7 @@ namespace NetStitch.Server
                 {
                     var lambda = Expression.Lambda<Action<OperationContext>>(block, operationContext);
                     this.action = lambda.Compile();
-                    this.OperationAsync = (Func<OperationContext, Task>)Delegate.CreateDelegate(typeof(Func<OperationContext, Task>), this, this.GetType().GetMethod("Action"));
+                    this.OperationAsync = (Func<OperationContext, Task>)this.GetType().GetMethod("Action").CreateDelegate(typeof(Func<OperationContext, Task>), this);
                 }
                 else
                 {
@@ -162,7 +162,7 @@ namespace NetStitch.Server
                     var excecute = Expression.Call(null, serializeMethod, block);
                     var lambda = Expression.Lambda<Func<OperationContext, byte[]>>(excecute, operationContext);
                     this.function = lambda.Compile();
-                    this.OperationAsync = (Func<OperationContext, Task>)Delegate.CreateDelegate(typeof(Func<OperationContext, Task>), this, this.GetType().GetMethod("Function"));
+                    this.OperationAsync = (Func<OperationContext, Task>)this.GetType().GetMethod("Function").CreateDelegate(typeof(Func<OperationContext, Task>), this);
 
                 }
             }
