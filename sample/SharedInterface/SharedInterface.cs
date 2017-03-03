@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using SharedInterface;
 using NetStitch;
 using System.Linq;
-using ZeroFormatter;
+using MessagePack;
 
 namespace SharedInterface
 {
@@ -141,12 +141,12 @@ namespace SharedInterface
 
     }
 
-    [ZeroFormattable]
+    [MessagePackObject]
     public class MyClass
     {
-        [Index(0)]
+        [Key(0)]
         public virtual string Name { get; set; }
-        [Index(1)]
+        [Key(1)]
         public virtual int Sum { get; set; }
     }
 

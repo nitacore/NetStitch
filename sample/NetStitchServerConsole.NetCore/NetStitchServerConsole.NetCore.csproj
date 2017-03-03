@@ -5,9 +5,8 @@
     <DefineConstants>TRACE;___server___</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MessagePack" Version="0.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.WebListener" Version="1.1.0" />
-    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
-    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.6.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj" />

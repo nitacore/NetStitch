@@ -13,9 +13,8 @@
     <OutputType>library</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MessagePack" Version="0.6.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
-    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.6.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetStitch.Common\NetStitch.Common.csproj" />

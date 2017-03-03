@@ -7,13 +7,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;NETSTANDERD</DefineConstants>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;NETSTANDERD</DefineConstants>
+  </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="MessagePack" Version="0.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.0" />
-    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
-    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.1.0" />
   </ItemGroup>
   
   <ItemGroup>

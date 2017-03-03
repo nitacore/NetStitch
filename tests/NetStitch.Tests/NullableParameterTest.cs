@@ -46,7 +46,7 @@ namespace NetStitch.Tests
                     decimal.MaxValue,
                     true,
                     new DateTime(2000, 1, 1).ToUniversalTime(),
-                    new DateTimeOffset(2000, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)),
+                    DateTimeOffset.MaxValue,
                     new TimeSpan(1, 1, 1, 1, 1),
                     'c'
                     );
@@ -76,7 +76,7 @@ namespace NetStitch.Tests
             Assert.Equal(myDecimal, decimal.MaxValue);
             Assert.Equal(myBoolean, true);
             Assert.Equal(myDateTime, new DateTime(2000, 1, 1).ToUniversalTime());
-            Assert.Equal(myDateTimeOffset, new DateTimeOffset(2000, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)));
+            Assert.Equal(myDateTimeOffset, DateTimeOffset.MaxValue);
             Assert.Equal(myTimeSpan, new TimeSpan(1, 1, 1, 1, 1));
             Assert.Equal(myChar, 'c');
             return 0;

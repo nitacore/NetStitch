@@ -144,12 +144,6 @@ NetStitch are Supported Analyzer and Codefix.
 
 (Although it is still incomplete)
 
-###Serializer
-NetStitch's request and response are serealized by [ZeroFormatter](https://github.com/neuecc/ZeroFormatter).
-
-Please try to define the type according to ZeroFormatter rules.
-
-
 ##License
 NetStitch is licensed under MIT. Refer to LICENSE for more information.
 

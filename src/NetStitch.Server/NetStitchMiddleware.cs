@@ -10,7 +10,6 @@ using System.IO;
 using System.Reflection.Emit;
 using NetStitch.Option;
 using NetStitch.Logger;
-using ZeroFormatter;
 
 namespace NetStitch.Server
 {
@@ -18,7 +17,6 @@ namespace NetStitch.Server
     {
         static NetStitchMiddleware()
         {
-            ZeroFormatter.Formatters.Formatter.AppendFormatterResolver(t => ZeroFormatterExtensions.ValueTupleFormatterResolver(t));
         }
 
         readonly NetStitchServer server;

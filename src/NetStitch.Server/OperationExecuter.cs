@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MessagePack;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using ZeroFormatter;
 
 namespace NetStitch.Server
 {
@@ -16,7 +16,7 @@ namespace NetStitch.Server
             HttpResponse responce = operationContext.HttpContext.Response;
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
-            ZeroFormatterSerializer.Serialize<TReturnType>(responce.Body, result);
+            MessagePackSerializer.Serialize<TReturnType>(responce.Body, result);
         }
         public static async Task AsyncExecute(OperationContext operationContext, Task task)
         {

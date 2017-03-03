@@ -62,7 +62,7 @@ namespace NetStitch.Tests
                     decimal.MaxValue,
                     true,
                     new DateTime(2000, 1, 1).ToUniversalTime(),
-                    new DateTimeOffset(2000, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)),
+                    DateTimeOffset.MaxValue,
                     new TimeSpan(1, 1, 1, 1, 1),
                     'c',
                     new string[] { "abc", "edf" },
@@ -79,7 +79,7 @@ namespace NetStitch.Tests
                     new decimal[] { decimal.MinValue, decimal.MaxValue },
                     new bool[] { true, false },
                     new DateTime[] { new DateTime(2017, 1, 1).ToUniversalTime(), new DateTime(2017, 1, 2).ToUniversalTime() },
-                    new DateTimeOffset[] { new DateTimeOffset(2000, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)), new DateTimeOffset(2001, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)) },
+                    new DateTimeOffset[] { DateTimeOffset.MinValue, DateTimeOffset.MaxValue },
                     new TimeSpan[] { new TimeSpan(1, 1, 1, 1, 1), new TimeSpan(2, 2, 2, 2, 2) },
                     "char".ToCharArray()
                     );
@@ -105,7 +105,7 @@ namespace NetStitch.Tests
             Assert.Equal(myDecimal, decimal.MaxValue);
             Assert.Equal(myBoolean, true);
             Assert.Equal(myDateTime, new DateTime(2000, 1, 1).ToUniversalTime());
-            Assert.Equal(myDateTimeOffset, new DateTimeOffset(2000, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)));
+            Assert.Equal(myDateTimeOffset, DateTimeOffset.MaxValue);
             Assert.Equal(myTimeSpan, new TimeSpan(1, 1, 1, 1, 1));
             Assert.Equal(myChar, 'c');
             Assert.Equal(myStringArray, new string[] { "abc", "edf" });
@@ -122,7 +122,7 @@ namespace NetStitch.Tests
             Assert.Equal(myDecimalArray, new decimal[] { decimal.MinValue, decimal.MaxValue });
             Assert.Equal(myBooleanArray, new bool[] { true, false });
             Assert.Equal(myDateTimeArray, new DateTime[] { new DateTime(2017, 1, 1).ToUniversalTime(), new DateTime(2017, 1, 2).ToUniversalTime() });
-            Assert.Equal(myDateTimeOffsetArray, new DateTimeOffset[] { new DateTimeOffset(2000, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)), new DateTimeOffset(2001, 1, 1, 1, 1, 1, System.TimeSpan.FromHours(9)) });
+            Assert.Equal(myDateTimeOffsetArray, new DateTimeOffset[] { DateTimeOffset.MinValue, DateTimeOffset.MaxValue });
             Assert.Equal(myTimeSpanArray, new TimeSpan[] { new TimeSpan(1, 1, 1, 1, 1), new TimeSpan(2, 2, 2, 2, 2) });
             Assert.Equal(myCharArray, "char".ToCharArray());
             return 1;

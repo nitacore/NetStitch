@@ -36,36 +36,10 @@
     <Compile Include="..\NetStitch.Common\OperationAttribute.cs">
       <Link>OperationAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\NetStitch.Common\ValueTupleFormatter.cs">
-      <Link>ValueTupleFormatter.cs</Link>
-      <DependentUpon>ValueTupleFormatter.tt</DependentUpon>
-    </Compile>
-    <Compile Include="..\NetStitch.Common\ZeroFormatterExtensions.cs">
-      <Link>ZeroFormatterExtensions.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="ZeroFormatter, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ZeroFormatter.1.6.2\lib\net45\ZeroFormatter.dll</HintPath>
-    </Reference>
-    <Reference Include="ZeroFormatter.Interfaces, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ZeroFormatter.Interfaces.1.6.2\lib\net45\ZeroFormatter.Interfaces.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\NetStitch.Common\ValueTupleFormatter.tt">
-      <Link>ValueTupleFormatter.tt</Link>
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ValueTupleFormatter.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

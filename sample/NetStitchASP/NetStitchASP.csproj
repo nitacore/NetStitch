@@ -11,6 +11,7 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MessagePack" Version="0.6.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.0.0" />
@@ -18,8 +19,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.0.0" />
     <PackageReference Include="NetStitch.Analyzer" Version="0.0.5-alpha" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />
-    <PackageReference Include="ZeroFormatter" Version="1.6.2" />
-    <PackageReference Include="ZeroFormatter.Interfaces" Version="1.6.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj" />

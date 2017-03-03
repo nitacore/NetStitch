@@ -1,4 +1,5 @@
-﻿using NetStitch;
+﻿using MessagePack;
+using NetStitch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,6 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ZeroFormatter;
 
 namespace NetStitch
 {
@@ -21,7 +21,6 @@ namespace NetStitch
 
         static NetStitchClient()
         {
-            ZeroFormatter.Formatters.Formatter.AppendFormatterResolver(t => ZeroFormatterExtensions.ValueTupleFormatterResolver(t));
         }
 
         public NetStitchClient(string endpoint)
@@ -65,7 +64,7 @@ namespace NetStitch
         {
             var response = await client.PostAsync(endpoint + "/" + operationID, content, cancellationToken).ConfigureAwait(false);
             var bytes = await response.EnsureSuccessStatusCode().Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-            return ZeroFormatterSerializer.Deserialize<T>(bytes, 0);
+            return MessagePackSerializer.Deserialize<T>(bytes);
         }
 
         private class StubType<T>
@@ -120,6 +119,7 @@ namespace NetStitch
             .Where(x => !string.IsNullOrWhiteSpace(x.OperationID))
             .Select(x => new OperationInfo()
             {
+                InterfaceType = interfaceType,
                 MethodInfo = x.methodInfo,
                 OperationID = x.OperationID,
                 FullParameters = x.methodInfo.GetParameters(),
@@ -140,6 +140,7 @@ namespace NetStitch
 
         internal class OperationInfo
         {
+            public Type InterfaceType;
             public MethodInfo MethodInfo;
             public string OperationID;
             public ParameterInfo[] FullParameters;
@@ -165,57 +166,25 @@ namespace NetStitch
             //HttpContent
             var bytes = il.DeclareLocal(typeof(byte[]));
 
+            var methodParameterType = CreateParameterSturctType(info.InterfaceType, info.MethodInfo, info.Parameters);
+
+            var pCtor = methodParameterType.GetTypeInfo().GetConstructor(info.Parameters.Select(x => x.ParameterType).ToArray());
+
+            var serializer = typeof(MessagePackSerializer).GetTypeInfo().GetMethods()
+                .First(x => x.Name == (nameof(MessagePackSerializer.Serialize)) && x.IsGenericMethod && x.GetParameters().Length == 1)
+                .MakeGenericMethod(methodParameterType);
+
             //ByteArrayContent
-            List<LocalBuilder> locals = new List<LocalBuilder>(info.Parameters.Length);
             for (int i = 0; i < info.Parameters.Length; i++)
             {
-                var serializer = typeof(ZeroFormatterSerializer).GetTypeInfo().GetMethods()
-                .First(x => x.Name == (nameof(ZeroFormatterSerializer.Serialize)) && x.IsGenericMethod && x.GetParameters().Length == 1)
-                .MakeGenericMethod(info.Parameters[i].ParameterType);
-
-                //Ldarg or Ldarga
                 il.Emit(OpCodes.Ldarg_S, i + 1);  // arg0 = this
-                il.Emit(OpCodes.Call, serializer);
-
-                var local = il.DeclareLocal(typeof(byte[]));
-                il.Emit(OpCodes.Stloc, local);
-                locals.Add(local);
             }
 
-            // All Byte Length
-            il.Emit(OpCodes.Ldc_I4_0);
-            for (int i = 0; i < locals.Count; i++)
-            {
-                il.Emit(OpCodes.Ldloc, locals[i]);
-                il.Emit(OpCodes.Ldlen);
-                il.Emit(OpCodes.Conv_I4);
-                il.Emit(OpCodes.Add);
-            }
+            il.Emit(OpCodes.Newobj, pCtor);
 
-            // new byte[All Parameters Byte Length]
-            il.Emit(OpCodes.Newarr, typeof(byte));
+            il.Emit(OpCodes.Call, serializer);
+
             il.Emit(OpCodes.Stloc, bytes);
-
-            // Body BlockCopy
-            for (int i = 0; i < locals.Count; i++)
-            {
-                il.Emit(OpCodes.Ldloc, locals[i]);
-                il.Emit(OpCodes.Ldc_I4_0);
-                il.Emit(OpCodes.Ldloc, bytes);
-                il.Emit(OpCodes.Ldc_I4_0);
-                for (int j = 0; j < i; j++)
-                {
-                    il.Emit(OpCodes.Ldloc, locals[j]);
-                    il.Emit(OpCodes.Ldlen);
-                    il.Emit(OpCodes.Conv_I4);
-                    il.Emit(OpCodes.Add);
-                }
-                il.Emit(OpCodes.Ldloc, locals[i]);
-                il.Emit(OpCodes.Ldlen);
-                il.Emit(OpCodes.Conv_I4);
-                il.Emit(OpCodes.Call, typeof(Buffer).GetTypeInfo().GetMethod(nameof(Buffer.BlockCopy)));
-            }
-
             il.Emit(OpCodes.Ldloc, bytes);
             il.Emit(OpCodes.Ldc_I4_0);
             il.Emit(OpCodes.Ldloc, bytes);
@@ -249,6 +218,49 @@ namespace NetStitch
             il.Emit(OpCodes.Ret);
 
             return method;
+        }
+
+        private static Type CreateParameterSturctType(Type interfaceType, MethodInfo methodInfo, ParameterInfo[] parameterInfo)
+        {
+            var assemblyName = new AssemblyName($"___{interfaceType.FullName}.{methodInfo.Name}");
+
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+
+            var moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.Name);
+
+            var typeBuilder = moduleBuilder.DefineType($"___{interfaceType.FullName}.{methodInfo.Name}",
+                TypeAttributes.Public |
+                TypeAttributes.SequentialLayout |
+                TypeAttributes.AnsiClass |
+                TypeAttributes.Sealed |
+                TypeAttributes.BeforeFieldInit,
+                typeof(ValueType));
+
+            var ctor = typeBuilder.DefineConstructor(
+                MethodAttributes.Public,
+                CallingConventions.Standard,
+                parameterInfo.Select(x => x.ParameterType).ToArray()
+                );
+
+            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(MessagePackObjectAttribute).GetTypeInfo().GetConstructor(new Type[] { typeof(bool) }), new object[] { false }));
+
+            var il = ctor.GetILGenerator();
+
+            var seq = parameterInfo.Select((x, index) => new { name = x.Name, parameterType = x.ParameterType, index });
+
+            foreach (var item in seq)
+            {
+                var field = typeBuilder.DefineField(item.name, item.parameterType, FieldAttributes.Public);
+                field.SetCustomAttribute(new CustomAttributeBuilder(typeof(KeyAttribute).GetTypeInfo().GetConstructor(new[] { typeof(int) }), new object[] { item.index }));
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldarg_S, item.index + 1);
+                il.Emit(OpCodes.Stfld, field);
+            }
+
+            il.Emit(OpCodes.Ret);
+
+            return typeBuilder.CreateTypeInfo().AsType();
+
         }
     }
 }

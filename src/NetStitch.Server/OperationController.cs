@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MessagePack;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using ZeroFormatter;
 
 namespace NetStitch.Server
 {
@@ -32,15 +32,15 @@ namespace NetStitch.Server
 
         //private readonly InnerMiddlewareAttribute[] innerMiddlewares;
 
-        private Type CreateParameterSturctType()
+        private Type CreateParameterSturctType(Type interfaceType, MethodInfo methodInfo)
         {
-            var assemblyName = new AssemblyName($"___{InterfaceType.FullName}.{MethodInfo.Name}");
+            var assemblyName = new AssemblyName($"___{interfaceType.FullName}.{methodInfo.Name}");
 
             var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
 
             var moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.Name);
 
-            var typeBuilder = moduleBuilder.DefineType($"___{InterfaceType.FullName}.{MethodInfo.Name}",
+            var typeBuilder = moduleBuilder.DefineType($"___{interfaceType.FullName}.{methodInfo.Name}",
                 TypeAttributes.Public |
                 TypeAttributes.SequentialLayout |
                 TypeAttributes.AnsiClass |
@@ -51,19 +51,19 @@ namespace NetStitch.Server
             var ctor = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,
                 CallingConventions.Standard,
-                MethodInfo.GetParameters().Select(x => x.ParameterType).ToArray()
+                methodInfo.GetParameters().Select(x => x.ParameterType).ToArray()
                 );
 
-            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(ZeroFormattableAttribute).GetConstructor(Type.EmptyTypes), new object[0]));
+            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(MessagePackObjectAttribute).GetTypeInfo().GetConstructor(new Type[] { typeof(bool) }), new object[] { false }));
 
             var il = ctor.GetILGenerator();
 
-            var seq = MethodInfo.GetParameters().Select((x, index) => new { name = x.Name, parameterType = x.ParameterType, index });
+            var seq = methodInfo.GetParameters().Select((x, index) => new { name = x.Name, parameterType = x.ParameterType, index });
 
             foreach (var item in seq)
             {
                 var field = typeBuilder.DefineField(item.name, item.parameterType, FieldAttributes.Public);
-                field.SetCustomAttribute(new CustomAttributeBuilder(typeof(IndexAttribute).GetConstructor(new[] { typeof(int) }), new object[] { item.index }));
+                field.SetCustomAttribute(new CustomAttributeBuilder(typeof(KeyAttribute).GetConstructor(new[] { typeof(int) }), new object[] { item.index }));
                 il.Emit(OpCodes.Ldarg_0);
                 il.Emit(OpCodes.Ldarg_S, item.index + 1);
                 il.Emit(OpCodes.Stfld, field);
@@ -81,7 +81,7 @@ namespace NetStitch.Server
             this.ClassType = targetType;
             this.InterfaceType = interfaceType;
             this.MethodInfo = targetMethodInfo;
-            this.ParameterStructType = CreateParameterSturctType();
+            this.ParameterStructType = CreateParameterSturctType(interfaceType, targetMethodInfo);
             this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
 
             bool requiresOperationContext = targetType.GetInterfaces().Any(x => x == typeof(IOperationContext));
@@ -92,10 +92,11 @@ namespace NetStitch.Server
 
             Type asyncRetunType = targetMethodInfo.ReturnType.GenericTypeArguments.FirstOrDefault();
 
-            MethodInfo deserializeMethod = typeof(ZeroFormatterSerializer).GetMethods()
-                                           .First(x => x.Name == (nameof(ZeroFormatterSerializer.Deserialize)) &&
+            MethodInfo deserializeMethod = typeof(MessagePackSerializer).GetMethods()
+                                           .First(x => x.Name == (nameof(MessagePackSerializer.Deserialize)) &&
                                                        x.IsGenericMethod &&
-                                                       x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream)))
+                                                       x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream) && 
+                                                       x.GetParameters().Length == 1))
                                            .MakeGenericMethod(new Type[] { ParameterStructType });
             // Context
             var operationContext = Expression.Parameter(typeof(OperationContext), nameof(OperationContext));
@@ -151,8 +152,8 @@ namespace NetStitch.Server
                 else
                 {
 
-                    MethodInfo serializeMethod = typeof(ZeroFormatterSerializer).GetMethods()
-                                                 .First(x => x.Name == (nameof(ZeroFormatterSerializer.Serialize)) &&
+                    MethodInfo serializeMethod = typeof(MessagePackSerializer).GetMethods()
+                                                 .First(x => x.Name == (nameof(MessagePackSerializer.Serialize)) &&
                                                              x.IsGenericMethod &&
                                                              x.GetParameters().Length == 1)
                                                  .MakeGenericMethod(new Type[] { this.MethodInfo.ReturnType });
