@@ -5,7 +5,7 @@
     <DefineConstants>TRACE;___server___</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="0.6.0" />
+    <PackageReference Include="MessagePack" Version="0.7.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.WebListener" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
