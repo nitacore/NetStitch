@@ -79,7 +79,7 @@ namespace NetStitch.Server
 
             foreach (var element in seq)
             {
-                var op = new OperationController(element.targetType, element.interfaceType, element.targetMethod, element.interfaceMethod);
+                var op = new OperationController(element.targetType, element.interfaceType, element.targetMethod, element.interfaceMethod, option);
                 OperationDic.Add(op.OperationID, op);
             }
 
@@ -120,7 +120,7 @@ namespace NetStitch.Server
 
                 var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                var operationContext = new OperationContext(httpContext, @operation);
+                var operationContext = new OperationContext(httpContext, @operation, option);
 
                 await @operation.OperationAsync(operationContext).ConfigureAwait(false);
                 

@@ -44,6 +44,9 @@ class Program
         int IEcho.Sum(int[] array) => array.Sum();
 
         (int sum, int count) ISharedInterfaceValueTuple.Tally(System.Collections.Generic.IList<(int a, int b)> tes)
-             => (tes.Sum(x => x.a + x.b), tes.Count);
+        {
+            return (tes.Sum(x => x.a + x.b), tes.Count);
+        }
+
     }
 }

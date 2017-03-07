@@ -1,5 +1,6 @@
 ﻿using MessagePack;
 using Microsoft.AspNetCore.Http;
+using NetStitch.Option;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,10 +26,11 @@ namespace NetStitch.Server
         public readonly Type InterfaceType;
         public readonly MethodInfo MethodInfo;
         public readonly Type ParameterStructType;
-
+        
         private readonly Action<OperationContext> action;
         private readonly Func<OperationContext, byte[]> function;
         internal readonly Func<OperationContext, Task> OperationAsync;
+        internal readonly NetStitchFilterAttribute[] filters;
 
         //private readonly InnerMiddlewareAttribute[] innerMiddlewares;
 
@@ -75,7 +77,7 @@ namespace NetStitch.Server
 
         }
 
-        public OperationController(Type targetType, Type interfaceType, MethodInfo targetMethodInfo, MethodInfo interfaceMethodInfo)
+        public OperationController(Type targetType, Type interfaceType, MethodInfo targetMethodInfo, MethodInfo interfaceMethodInfo, NetStitchOption option)
         {
 
             this.ClassType = targetType;
@@ -132,8 +134,8 @@ namespace NetStitch.Server
             if (operationIsAsyncType)
             {
                 var asyncExecuteMethodInfo = operationIsAsyncFunction ?
-                    typeof(OperationExecuter).GetMethods().First(x => x.Name == (nameof(OperationExecuter.AsyncExecute)) && x.IsGenericMethod).MakeGenericMethod(asyncRetunType) :
-                    typeof(OperationExecuter).GetMethods().First(x => x.Name == (nameof(OperationExecuter.AsyncExecute)) && !x.IsGenericMethod);
+                    typeof(OperationController).GetMethod(nameof(OperationController.AsyncFunction)).MakeGenericMethod(asyncRetunType) :
+                    typeof(OperationController).GetMethod(nameof(OperationController.AsyncAction));
 
                 var taskExecute = Expression.Call(null, asyncExecuteMethodInfo, operationContext, block);
                 var lambda = Expression.Lambda<Func<OperationContext, Task>>(taskExecute, operationContext);
@@ -167,6 +169,45 @@ namespace NetStitch.Server
 
                 }
             }
+
+            this.filters = option.GlobalFilters
+                .Concat(targetType.GetTypeInfo().GetCustomAttributes<NetStitchFilterAttribute>(true))
+                .Concat(targetMethodInfo.GetCustomAttributes<NetStitchFilterAttribute>(true))
+                .OrderBy(x => x.Order)
+                .ToArray();
+
+            this.OperationAsync = SetFilter(this.OperationAsync);
+
+        }
+
+        Func<OperationContext, Task> SetFilter(Func<OperationContext, Task> methodBody)
+        {
+            foreach (var filter in this.filters.Reverse())
+            {
+                var fields = filter.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var newFilter = (NetStitchFilterAttribute)Activator.CreateInstance(filter.GetType(), new object[] { methodBody });
+                foreach (var item in fields)
+                {
+                    item.SetValue(newFilter, item.GetValue(filter));
+                }
+                methodBody = newFilter.Invoke;
+            }
+            return methodBody;
+        }
+
+        public static async Task AsyncAction(OperationContext operationContext, Task task)
+        {
+            await task.ConfigureAwait(false);
+            operationContext.HttpContext.Response.StatusCode = HttpStatus.NoContent;
+        }
+
+        public static async Task AsyncFunction<TReturnType>(OperationContext operationContext, Task<TReturnType> task)
+        {
+            TReturnType result = await task.ConfigureAwait(false);
+            HttpResponse responce = operationContext.HttpContext.Response;
+            responce.ContentType = "application/octet-stream";
+            responce.StatusCode = HttpStatus.OK;
+            MessagePackSerializer.Serialize<TReturnType>(responce.Body, result);
         }
 
         public async Task Action(OperationContext Context)
@@ -200,6 +241,7 @@ namespace NetStitch.Server
                 ms.SetLength(result.Length);
                 var dest = ms.GetBuffer();
                 Buffer.BlockCopy(result, 0, dest, 0, result.Length);
+                return;
 #endif
             }
 

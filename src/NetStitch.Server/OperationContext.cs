@@ -6,15 +6,16 @@ using Microsoft.AspNetCore.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Linq;
+using NetStitch.Option;
 
 namespace NetStitch
 {
     public class OperationContext
     {
 
-        private HttpContext httpContext;
+        private HttpContext httpcontext;
 
-        public HttpContext HttpContext => httpContext;
+        public HttpContext HttpContext => httpcontext;
 
         private OperationController operationController;
 
@@ -28,10 +29,13 @@ namespace NetStitch
 
         public string OperationID => operationController.OperationID;
 
-        public OperationContext(HttpContext httpContext, OperationController operationController)
+        public NetStitchOption Opetion;
+
+        public OperationContext(HttpContext httpContext, OperationController operationController, NetStitchOption option)
         {
-            this.httpContext = httpContext;
+            this.httpcontext = httpContext;
             this.operationController = operationController;
+            this.Opetion = option;
         }
 
     }

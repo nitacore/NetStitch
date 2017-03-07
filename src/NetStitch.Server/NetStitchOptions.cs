@@ -9,5 +9,6 @@ namespace NetStitch.Option
     {
         public NetStitchOption() { }
         public INetStitchLogger Logger { get; set; }
+        public NetStitchFilterAttribute[] GlobalFilters { get; set; }
     }
 }

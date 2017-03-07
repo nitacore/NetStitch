@@ -32,6 +32,27 @@ namespace NetStitchServerConsole
             }
         }
 
+        public class testFilter : NetStitchFilterAttribute
+        {
+            public testFilter() :base(null) {}
+            public testFilter(Func<OperationContext, Task> next) : base(next) {}
+            public override async Task Invoke(OperationContext context)
+            {
+                var original = context.HttpContext.Response.Body;
+                using (var buffer = new System.IO.MemoryStream())
+                {
+                    Console.WriteLine("test");
+                    context.HttpContext.Response.Body = buffer;
+                    await Next(context).ConfigureAwait(false);
+                    context.HttpContext.Response.Body = original;
+                    context.HttpContext.Response.ContentLength = buffer.Length;
+                    buffer.Position = 0;
+                    await buffer.CopyToAsync(original);
+                };
+            }
+        }
+
+        [testFilter()]
         public struct Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType, NetStitch.IOperationContext
         {
 
@@ -44,6 +65,7 @@ namespace NetStitchServerConsole
 
             public MyClass Foo(string a, int? x, int[] array)
             {
+                
                 return new MyClass() { };
             }
 

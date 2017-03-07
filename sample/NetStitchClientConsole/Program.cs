@@ -40,16 +40,16 @@ namespace NetStitchClientConsole
 
                 //Console.WriteLine(result.ToString());
 
-                var seq = Enumerable.Range(1, 1000)
-                          .Select(x => stub.EchoAsync("hogehoge", x, 10, SharedInterface.MyEnum.B))
-                          .ToArray();
+                //var seq = Enumerable.Range(1, 1000)
+                //          .Select(x => stub.EchoAsync("hogehoge", x, 10, SharedInterface.MyEnum.B))
+                //          .ToArray();
 
-                var t = await Task.WhenAll(seq);
+                //var t = await Task.WhenAll(seq);
 
-                foreach (var result in t)
-                {
-                    Console.WriteLine(result.Sum);
-                }
+                //foreach (var result in t)
+                //{
+                //    Console.WriteLine(result.Sum);
+                //}
             }
             catch (Exception)
             {

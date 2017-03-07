@@ -31,6 +31,7 @@ namespace NetStitch.Server
         public NetStitchMiddleware(RequestDelegate next, Assembly[] assemblies, NetStitchOption option)
         {
             option.Logger = option.Logger ?? new NetStitchEmptyLogger();
+            option.GlobalFilters = option.GlobalFilters ?? new NetStitchFilterAttribute[0];
             server = new NetStitchServer(assemblies, option);
         }
         public async Task Invoke(HttpContext httpContext)
