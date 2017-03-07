@@ -131,10 +131,19 @@ namespace NetStitch.Server
             {
                 option.Logger.OperationError(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name, ex);
 
-                httpContext.Response.StatusCode = HttpStatus.InternalServerError;
-                httpContext.Request.ContentType = "text/plain";
-                var bytes = new UTF8Encoding(false).GetBytes(ex.Message);
-                httpContext.Response.Body.Write(bytes, 0, bytes.Length);
+                switch (option.ExceptionHandling)
+                {
+                    case ExceptionHandling.HideMessage:
+                        httpContext.Response.StatusCode = HttpStatus.InternalServerError;
+                        break;
+                    case ExceptionHandling.ShowMessage:
+                    default:
+                        httpContext.Response.StatusCode = HttpStatus.InternalServerError;
+                        httpContext.Request.ContentType = "text/plain";
+                        var bytes = new UTF8Encoding(false).GetBytes(ex.Message);
+                        httpContext.Response.Body.Write(bytes, 0, bytes.Length);
+                        break;
+                }
             }
         }
     }

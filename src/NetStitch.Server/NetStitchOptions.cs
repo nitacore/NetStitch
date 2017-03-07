@@ -10,5 +10,12 @@ namespace NetStitch.Option
         public NetStitchOption() { }
         public INetStitchLogger Logger { get; set; }
         public NetStitchFilterAttribute[] GlobalFilters { get; set; }
+        public ExceptionHandling ExceptionHandling { get; set; } = ExceptionHandling.HideMessage;
+    }
+
+    public enum ExceptionHandling
+    {
+        HideMessage,
+        ShowMessage
     }
 }
