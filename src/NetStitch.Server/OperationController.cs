@@ -94,8 +94,8 @@ namespace NetStitch.Server
 
             Type asyncRetunType = targetMethodInfo.ReturnType.GenericTypeArguments.FirstOrDefault();
 
-            MethodInfo deserializeMethod = typeof(MessagePackSerializer).GetMethods()
-                                           .First(x => x.Name == (nameof(MessagePackSerializer.Deserialize)) &&
+            MethodInfo deserializeMethod = typeof(LZ4MessagePackSerializer).GetMethods()
+                                           .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Deserialize)) &&
                                                        x.IsGenericMethod &&
                                                        x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream) && 
                                                        x.GetParameters().Length == 1))
@@ -154,8 +154,8 @@ namespace NetStitch.Server
                 else
                 {
 
-                    MethodInfo serializeMethod = typeof(MessagePackSerializer).GetMethods()
-                                                 .First(x => x.Name == (nameof(MessagePackSerializer.Serialize)) &&
+                    MethodInfo serializeMethod = typeof(LZ4MessagePackSerializer).GetMethods()
+                                                 .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) &&
                                                              x.IsGenericMethod &&
                                                              x.GetParameters().Length == 1)
                                                  .MakeGenericMethod(new Type[] { this.MethodInfo.ReturnType });

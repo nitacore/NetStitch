@@ -170,8 +170,8 @@ namespace NetStitch
 
             var pCtor = methodParameterType.GetTypeInfo().GetConstructor(info.Parameters.Select(x => x.ParameterType).ToArray());
 
-            var serializer = typeof(MessagePackSerializer).GetTypeInfo().GetMethods()
-                .First(x => x.Name == (nameof(MessagePackSerializer.Serialize)) && x.IsGenericMethod && x.GetParameters().Length == 1)
+            var serializer = typeof(LZ4MessagePackSerializer).GetTypeInfo().GetMethods()
+                .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) && x.IsGenericMethod && x.GetParameters().Length == 1)
                 .MakeGenericMethod(methodParameterType);
 
             //ByteArrayContent
