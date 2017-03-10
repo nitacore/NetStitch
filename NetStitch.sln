@@ -41,9 +41,15 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTuple", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.Net", "tests\NetStitch.Tests.Net\NetStitch.Tests.Net.csproj", "{2E3DF5C2-8A38-4A03-86D7-8D463C917E47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitchServerConsole", "sample\NetStitchServerConsole\NetStitchServerConsole.csproj", "{5588456E-0DB2-40BD-8C38-E807BFD4D44D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitchClientConsole", "sample\NetStitchClientConsole\NetStitchClientConsole.csproj", "{82E7DF8D-1444-4E7A-AFEE-33B31589240E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		sample\SharedInterface\SharedInterface.projitems*{5588456e-0db2-40bd-8c38-e807bfd4d44d}*SharedItemsImports = 4
 		sample\SharedProjectValueTuple\SharedProjectValueTuple.projitems*{5c6338fa-06e1-4da0-bc63-3c9cc786eb3a}*SharedItemsImports = 13
+		sample\SharedInterface\SharedInterface.projitems*{82e7df8d-1444-4e7a-afee-33b31589240e}*SharedItemsImports = 4
 		sample\SharedInterface\SharedInterface.projitems*{c380025c-46e3-44ef-8f85-8e737c787453}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -211,6 +217,30 @@ Global
 		{2E3DF5C2-8A38-4A03-86D7-8D463C917E47}.Release|x64.Build.0 = Release|Any CPU
 		{2E3DF5C2-8A38-4A03-86D7-8D463C917E47}.Release|x86.ActiveCfg = Release|Any CPU
 		{2E3DF5C2-8A38-4A03-86D7-8D463C917E47}.Release|x86.Build.0 = Release|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x64.Build.0 = Debug|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x86.Build.0 = Debug|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x64.ActiveCfg = Release|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x64.Build.0 = Release|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x86.ActiveCfg = Release|Any CPU
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x86.Build.0 = Release|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|x64.Build.0 = Debug|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|x86.Build.0 = Debug|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Release|x64.ActiveCfg = Release|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Release|x64.Build.0 = Release|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Release|x86.ActiveCfg = Release|Any CPU
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,5 +262,7 @@ Global
 		{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 		{5C6338FA-06E1-4DA0-BC63-3C9CC786EB3A} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 		{2E3DF5C2-8A38-4A03-86D7-8D463C917E47} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
+		{5588456E-0DB2-40BD-8C38-E807BFD4D44D} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
+		{82E7DF8D-1444-4E7A-AFEE-33B31589240E} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 	EndGlobalSection
 EndGlobal
