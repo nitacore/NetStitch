@@ -13,7 +13,7 @@
     <OutputType>library</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="0.8.5" />
+    <PackageReference Include="MessagePack" Version="1.0.3" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>

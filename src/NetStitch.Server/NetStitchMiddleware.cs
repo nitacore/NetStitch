@@ -20,7 +20,6 @@ namespace NetStitch.Server
         }
 
         readonly NetStitchServer server;
-        private readonly RequestDelegate next;
 
         public NetStitchMiddleware(RequestDelegate next, Type type)
              : this(next, type, new NetStitchOption()) { }
