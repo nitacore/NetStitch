@@ -3,6 +3,8 @@ NetStitch is a Http RPC Framework built on .NetFramework/.NETCore.
 
 This Project is an Alpha Version.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/9heni02h0fmubqjb?svg=true)](https://ci.appveyor.com/project/nitacore/netstitch)
+
 ## NetStitch.Server
 
 NetStitch.Server is a Middleware of ASP.NET Core.
