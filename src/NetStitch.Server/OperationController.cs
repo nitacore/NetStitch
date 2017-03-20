@@ -114,7 +114,7 @@ namespace NetStitch.Server
             var request = Expression.Property(httpContext, nameof(HttpContext.Request));
             var body = Expression.Property(request, nameof(HttpRequest.Body));
 
-            // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
             var deserialize = Expression.Call(null, deserializeMethod, body);
             var obj = Expression.Parameter(ParameterStructType, "obj");
             var assign = Expression.Assign(obj, deserialize);
@@ -125,11 +125,11 @@ namespace NetStitch.Server
             // new Class().Method(obj.field1, obj.field2, ...)
             var callMethod = Expression.Call(newClass, targetMethodInfo, args);
 
-            // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
             // new Class().Method(obj.field1, obj.field2, ...)
             var block = Expression.Block(new[] { obj }, assign, callMethod);
 
-            // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
             // AsyncExecute(new Class().Method(obj.field1, obj.field2, ...))
             if (operationIsAsyncType)
             {
@@ -143,7 +143,7 @@ namespace NetStitch.Server
             }
             else
             {
-                // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+                // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
                 // new Class().Method(obj.field1, obj.field2, ...)
                 if (targetMethodInfo.ReturnType == typeof(void))
                 {
@@ -160,8 +160,8 @@ namespace NetStitch.Server
                                                              x.GetParameters().Length == 1)
                                                  .MakeGenericMethod(new Type[] { this.MethodInfo.ReturnType });
 
-                    // ParameterStructType obj = Zeroformatter.Deserialize<ParameterStructType>(HttpContext.Request.Body);
-                    // ZeroFormatterSerializer.Serialize<TReturnType>(new Class().Method(obj.field1, obj.field2, ...))
+                    // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+                    // LZ4MessagePackSerializer.Serialize<TReturnType>(new Class().Method(obj.field1, obj.field2, ...))
                     var excecute = Expression.Call(null, serializeMethod, block);
                     var lambda = Expression.Lambda<Func<OperationContext, byte[]>>(excecute, operationContext);
                     this.function = lambda.Compile();
