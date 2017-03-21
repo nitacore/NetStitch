@@ -86,7 +86,6 @@ namespace NetStitch.Server
             this.MethodInfo = targetMethodInfo;
             this.ParameterStructType = CreateParameterSturctType(interfaceType, targetMethodInfo);
             this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
-            this.FormatterResolver = option.FormatterResolver;
 
             bool requiresOperationContext = targetType.GetInterfaces().Any(x => x == typeof(IOperationContext));
 

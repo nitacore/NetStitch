@@ -17,15 +17,18 @@ namespace NetStitch
         readonly protected string endpoint;
         readonly protected HttpClient client;
 
-        private readonly IDictionary<Type, object> operationDic = new Dictionary<Type, object>();
+        private readonly IDictionary<RuntimeTypeHandle, object> operationDic =
+            new Dictionary<RuntimeTypeHandle, object>(new RuntimeTypeHandleEqualityComparer());
 
         static NetStitchClient()
         {
         }
 
         public NetStitchClient(string endpoint)
-                : this(endpoint, new HttpClient())
-            { }
+            : this(endpoint, new HttpClient()) { }
+
+        public NetStitchClient(string endpoint, HttpMessageHandler handler)
+            : this(endpoint, new HttpClient(handler, false)) { }
 
         public NetStitchClient(string endpoint, HttpClient client)
         {
@@ -39,14 +42,13 @@ namespace NetStitch
 
             //Bad Pattern : High Cost
             object result;
-            if (!operationDic.TryGetValue(type, out result))
+            if (!operationDic.TryGetValue(type.TypeHandle, out result))
             {
-                var ctorInfo = StubType<T>.Value.GetConstructor(new Type[] { typeof(NetStitchClient) });
-                result = ctorInfo.Invoke(new object[] { this });
+                result = Activator.CreateInstance(DynamicType<T>.Type, this);
                 lock (operationDic)
                 {
-                    if (!operationDic.ContainsKey(type))
-                        operationDic.Add(type, result);
+                    if (!operationDic.ContainsKey(type.TypeHandle))
+                        operationDic.Add(type.TypeHandle, result);
                 }
             }
             return (T)result;
@@ -67,16 +69,19 @@ namespace NetStitch
             return MessagePackSerializer.Deserialize<T>(bytes);
         }
 
-        private class StubType<T>
+        private class DynamicType<T>
         {
-            private static readonly Lazy<TypeInfo> lazy = new Lazy<TypeInfo>(() => (CreateType(typeof(T))));
+            static DynamicType()
+            {
+                Type = CreateType(typeof(T));
+            }
 
-            internal static TypeInfo Value { get { return lazy.Value; } }
+            internal static Type Type { get; private set; }
 
-            private StubType() { }
+            private DynamicType() { }
         }
 
-        private static TypeInfo CreateType(Type interfaceType)
+        private static Type CreateType(Type interfaceType)
         {
             var typeSignature = "___" + interfaceType.Name;
             var assemblyName = new AssemblyName(typeSignature);
@@ -134,7 +139,7 @@ namespace NetStitch
                 typeBuilder.DefineMethodOverride(mb, method.MethodInfo);
             }
 
-            return typeBuilder.CreateTypeInfo();
+            return typeBuilder.CreateTypeInfo().AsType();
 
         }
 
@@ -263,4 +268,14 @@ namespace NetStitch
 
         }
     }
+
+    public class RuntimeTypeHandleEqualityComparer : IEqualityComparer<RuntimeTypeHandle>
+    {
+        public bool Equals(RuntimeTypeHandle x, RuntimeTypeHandle y)
+            => x.Equals(y);
+
+        public int GetHashCode(RuntimeTypeHandle obj)
+            => obj.GetHashCode();
+    }
+
 }

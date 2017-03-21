@@ -14,11 +14,13 @@ namespace NetStitch
     public class OperationContext
     {
 
+        private OperationController operationController;
+
+        private NetStitchOption option;
+
         private HttpContext httpcontext;
 
         public HttpContext HttpContext => httpcontext;
-
-        private OperationController operationController;
 
         public Type ClassType => operationController.ClassType;
 
@@ -30,15 +32,13 @@ namespace NetStitch
 
         public string OperationID => operationController.OperationID;
 
-        public NetStitchOption Opetion;
-
-        public IFormatterResolver FormatterResolver => operationController.FormatterResolver;
+        public IFormatterResolver FormatterResolver => option.FormatterResolver;
 
         public OperationContext(HttpContext httpContext, OperationController operationController, NetStitchOption option)
         {
             this.httpcontext = httpContext;
             this.operationController = operationController;
-            this.Opetion = option;
+            this.option = option;
         }
 
     }
