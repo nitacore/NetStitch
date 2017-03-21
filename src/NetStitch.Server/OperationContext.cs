@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Linq;
 using NetStitch.Option;
+using MessagePack;
 
 namespace NetStitch
 {
@@ -30,6 +31,8 @@ namespace NetStitch
         public string OperationID => operationController.OperationID;
 
         public NetStitchOption Opetion;
+
+        public IFormatterResolver FormatterResolver => operationController.FormatterResolver;
 
         public OperationContext(HttpContext httpContext, OperationController operationController, NetStitchOption option)
         {

@@ -26,6 +26,7 @@ namespace NetStitch.Server
         public readonly Type InterfaceType;
         public readonly MethodInfo MethodInfo;
         public readonly Type ParameterStructType;
+        public readonly IFormatterResolver FormatterResolver;
         
         private readonly Action<OperationContext> action;
         private readonly Func<OperationContext, byte[]> function;
@@ -85,6 +86,7 @@ namespace NetStitch.Server
             this.MethodInfo = targetMethodInfo;
             this.ParameterStructType = CreateParameterSturctType(interfaceType, targetMethodInfo);
             this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
+            this.FormatterResolver = option.FormatterResolver;
 
             bool requiresOperationContext = targetType.GetInterfaces().Any(x => x == typeof(IOperationContext));
 
@@ -98,8 +100,9 @@ namespace NetStitch.Server
                                            .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Deserialize)) &&
                                                        x.IsGenericMethod &&
                                                        x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream) && 
-                                                       x.GetParameters().Length == 1))
+                                                       x.GetParameters().Length == 2))
                                            .MakeGenericMethod(new Type[] { ParameterStructType });
+
             // Context
             var operationContext = Expression.Parameter(typeof(OperationContext), nameof(OperationContext));
             var bindContext = Expression.Bind(typeof(IOperationContext).GetProperty(nameof(IOperationContext.Context)), operationContext);
@@ -114,8 +117,12 @@ namespace NetStitch.Server
             var request = Expression.Property(httpContext, nameof(HttpContext.Request));
             var body = Expression.Property(request, nameof(HttpRequest.Body));
 
-            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
-            var deserialize = Expression.Call(null, deserializeMethod, body);
+            //Resolver
+            var formatterResolver = Expression.Parameter(typeof(IFormatterResolver), nameof(IFormatterResolver));
+            var resolverProperty = Expression.Property(operationContext, nameof(OperationContext.FormatterResolver));
+
+            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
+            var deserialize = Expression.Call(null, deserializeMethod, body, resolverProperty);
             var obj = Expression.Parameter(ParameterStructType, "obj");
             var assign = Expression.Assign(obj, deserialize);
 
@@ -125,11 +132,11 @@ namespace NetStitch.Server
             // new Class().Method(obj.field1, obj.field2, ...)
             var callMethod = Expression.Call(newClass, targetMethodInfo, args);
 
-            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
             // new Class().Method(obj.field1, obj.field2, ...)
             var block = Expression.Block(new[] { obj }, assign, callMethod);
 
-            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
             // AsyncExecute(new Class().Method(obj.field1, obj.field2, ...))
             if (operationIsAsyncType)
             {
@@ -143,7 +150,7 @@ namespace NetStitch.Server
             }
             else
             {
-                // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+                // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
                 // new Class().Method(obj.field1, obj.field2, ...)
                 if (targetMethodInfo.ReturnType == typeof(void))
                 {
@@ -157,12 +164,12 @@ namespace NetStitch.Server
                     MethodInfo serializeMethod = typeof(LZ4MessagePackSerializer).GetMethods()
                                                  .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) &&
                                                              x.IsGenericMethod &&
-                                                             x.GetParameters().Length == 1)
+                                                             x.GetParameters().Length == 2)
                                                  .MakeGenericMethod(new Type[] { this.MethodInfo.ReturnType });
 
-                    // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body);
+                    // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
                     // LZ4MessagePackSerializer.Serialize<TReturnType>(new Class().Method(obj.field1, obj.field2, ...))
-                    var excecute = Expression.Call(null, serializeMethod, block);
+                    var excecute = Expression.Call(null, serializeMethod, block, resolverProperty);
                     var lambda = Expression.Lambda<Func<OperationContext, byte[]>>(excecute, operationContext);
                     this.function = lambda.Compile();
                     this.OperationAsync = (Func<OperationContext, Task>)this.GetType().GetMethod("Function").CreateDelegate(typeof(Func<OperationContext, Task>), this);
@@ -207,7 +214,7 @@ namespace NetStitch.Server
             HttpResponse responce = operationContext.HttpContext.Response;
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
-            MessagePackSerializer.Serialize<TReturnType>(responce.Body, result);
+            MessagePackSerializer.Serialize<TReturnType>(responce.Body, result, operationContext.FormatterResolver);
         }
 
         public async Task Action(OperationContext Context)
