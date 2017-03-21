@@ -146,6 +146,11 @@ NetStitch are Supported Analyzer and Codefix.
 
 (Although it is still incomplete)
 
+### Serializer
+NetStitch is request and response are serealized by [MessagePack-CSharp](https://github.com/neuecc/MessagePack-CSharp)(LZ4MessagePackSerializer).
+
+Please try to define the type according to MessagePack-CSharp rules.
+
 ## License
 NetStitch is licensed under MIT. Refer to LICENSE for more information.
 
