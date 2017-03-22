@@ -30,7 +30,7 @@ class Program
         }
     }
 
-    public struct Tally : IEcho, IAsyncTest, IOperationContext, ISharedInterfaceValueTuple
+    public class Tally : IEcho, IAsyncTest, IOperationContext, ISharedInterfaceValueTuple
     {
         public OperationContext Context { get; set; }
 

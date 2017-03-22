@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NetStitchServerConsole</RootNamespace>
     <AssemblyName>NetStitchServerConsole</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -277,17 +277,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\NetStitch.Common.Net45\NetStitch.Common.Net45.csproj">
-      <Project>{51db200c-315b-4f94-b28b-cacb52eabea1}</Project>
-      <Name>NetStitch.Common.Net45</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\NetStitch.Server.Net451\NetStitch.Server.Net451.csproj">
-      <Project>{640e5c1f-17ee-4efb-af69-74dabe76f9ae}</Project>
-      <Name>NetStitch.Server.Net451</Name>
-    </ProjectReference>
+    <Analyzer Include="..\..\packages\NetStitch.Analyzer.0.0.5-alpha\analyzers\dotnet\cs\NetStitch.Analayzer.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\NetStitch.Analyzer.0.0.5-alpha\analyzers\dotnet\cs\NetStitch.Analayzer.dll" />
+    <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj">
+      <Project>{dcae581c-c0a4-4feb-b547-ec5066c4b65e}</Project>
+      <Name>NetStitch.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\NetStitch.Server\NetStitch.Server.csproj">
+      <Project>{0737d78a-47ca-48ef-94a9-583f7bfe0ebd}</Project>
+      <Name>NetStitch.Server</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\SharedInterface\SharedInterface.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

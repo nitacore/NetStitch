@@ -57,7 +57,7 @@ namespace NetStitch.Server
                 methodInfo.GetParameters().Select(x => x.ParameterType).ToArray()
                 );
 
-            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(MessagePackObjectAttribute).GetTypeInfo().GetConstructor(new Type[] { typeof(bool) }), new object[] { false }));
+            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(MessagePackObjectAttribute).GetConstructor(new Type[] { typeof(bool) }), new object[] { false }));
 
             var il = ctor.GetILGenerator();
 
@@ -213,7 +213,7 @@ namespace NetStitch.Server
             HttpResponse responce = operationContext.HttpContext.Response;
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
-            MessagePackSerializer.Serialize<TReturnType>(responce.Body, result, operationContext.FormatterResolver);
+            LZ4MessagePackSerializer.Serialize<TReturnType>(responce.Body, result, operationContext.FormatterResolver);
         }
 
         public async Task Action(OperationContext Context)
@@ -225,34 +225,11 @@ namespace NetStitch.Server
 
         public async Task Function(OperationContext Context)
         {
-
             byte[] result = function(Context);
-
             HttpResponse responce = Context.HttpContext.Response;
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
-
-            var ms = responce.Body as System.IO.MemoryStream;
-            if (ms != null && ms.Position == 0)
-            {
-#if NETSTANDERD
-                ArraySegment<byte> buf;
-                if (ms.TryGetBuffer(out buf))
-                {
-                    ms.SetLength(result.Length);
-                    Buffer.BlockCopy(result, 0, buf.Array, 0, result.Length);
-                    return;
-                }
-#else
-                ms.SetLength(result.Length);
-                var dest = ms.GetBuffer();
-                Buffer.BlockCopy(result, 0, dest, 0, result.Length);
-                return;
-#endif
-            }
-
             await responce.Body.WriteAsync(result, 0, result.Length);
-
         }
 
         public static class TaskDone

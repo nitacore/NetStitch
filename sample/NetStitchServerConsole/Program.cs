@@ -53,7 +53,7 @@ namespace NetStitchServerConsole
         }
 
         [testFilter()]
-        public struct Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType, NetStitch.IOperationContext
+        public class Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType, NetStitch.IOperationContext
         {
 
             public OperationContext Context { get; set; }

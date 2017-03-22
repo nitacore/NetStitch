@@ -66,7 +66,7 @@ namespace NetStitch
         {
             var response = await client.PostAsync(endpoint + "/" + operationID, content, cancellationToken).ConfigureAwait(false);
             var bytes = await response.EnsureSuccessStatusCode().Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-            return MessagePackSerializer.Deserialize<T>(bytes);
+            return LZ4MessagePackSerializer.Deserialize<T>(bytes);
         }
 
         private class DynamicType<T>
@@ -114,7 +114,7 @@ namespace NetStitch
             myConstructorIL.Emit(OpCodes.Stfld, clientField);
             myConstructorIL.Emit(OpCodes.Ret);
 
-            var info = interfaceType.GetTypeInfo().GetMethods()
+            var info = interfaceType.GetMethods()
             .Select(x =>
             new
             {
@@ -173,9 +173,9 @@ namespace NetStitch
 
             var methodParameterType = CreateParameterSturctType(info.InterfaceType, info.MethodInfo, info.Parameters);
 
-            var pCtor = methodParameterType.GetTypeInfo().GetConstructor(info.Parameters.Select(x => x.ParameterType).ToArray());
+            var pCtor = methodParameterType.GetConstructor(info.Parameters.Select(x => x.ParameterType).ToArray());
 
-            var serializer = typeof(LZ4MessagePackSerializer).GetTypeInfo().GetMethods()
+            var serializer = typeof(LZ4MessagePackSerializer).GetMethods()
                 .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) && x.IsGenericMethod && x.GetParameters().Length == 1)
                 .MakeGenericMethod(methodParameterType);
 
@@ -195,17 +195,17 @@ namespace NetStitch
             il.Emit(OpCodes.Ldloc, bytes);
             il.Emit(OpCodes.Ldlen);
 
-            il.Emit(OpCodes.Newobj, typeof(ByteArrayContent).GetTypeInfo().GetConstructor(new[] { typeof(byte[]), typeof(int), typeof(int) }));
+            il.Emit(OpCodes.Newobj, typeof(ByteArrayContent).GetConstructor(new[] { typeof(byte[]), typeof(int), typeof(int) }));
 
             var byteArrayContent = il.DeclareLocal(typeof(ByteArrayContent));
             il.Emit(OpCodes.Stloc, byteArrayContent);
             il.Emit(OpCodes.Ldloc, byteArrayContent);
 
             //Set ContentType
-            il.Emit(OpCodes.Callvirt, typeof(ByteArrayContent).GetTypeInfo().GetMethod("get_Headers", BindingFlags.Public | BindingFlags.Instance));
+            il.Emit(OpCodes.Callvirt, typeof(ByteArrayContent).GetMethod("get_Headers", BindingFlags.Public | BindingFlags.Instance));
             il.Emit(OpCodes.Ldstr, "application/octet-stream");
-            il.Emit(OpCodes.Newobj, typeof(System.Net.Http.Headers.MediaTypeHeaderValue).GetTypeInfo().GetConstructor(new Type[] { typeof(string) }));
-            il.Emit(OpCodes.Callvirt, typeof(System.Net.Http.Headers.HttpContentHeaders).GetTypeInfo().GetMethod("set_ContentType", BindingFlags.Public | BindingFlags.Instance));
+            il.Emit(OpCodes.Newobj, typeof(System.Net.Http.Headers.MediaTypeHeaderValue).GetConstructor(new Type[] { typeof(string) }));
+            il.Emit(OpCodes.Callvirt, typeof(System.Net.Http.Headers.HttpContentHeaders).GetMethod("set_ContentType", BindingFlags.Public | BindingFlags.Instance));
 
             il.Emit(OpCodes.Ldloc, byteArrayContent);
 
@@ -217,8 +217,8 @@ namespace NetStitch
 
             //PostAsync or PostAsync<T>
             il.Emit(OpCodes.Callvirt, info.ReturnInnerType == null ?
-               typeof(NetStitchClient).GetTypeInfo().GetMethods().First(x => x.Name == "PostAsync" && !x.IsGenericMethod) :
-               typeof(NetStitchClient).GetTypeInfo().GetMethods().First(x => x.Name == "PostAsync" && x.IsGenericMethod)
+               typeof(NetStitchClient).GetMethods().First(x => x.Name == "PostAsync" && !x.IsGenericMethod) :
+               typeof(NetStitchClient).GetMethods().First(x => x.Name == "PostAsync" && x.IsGenericMethod)
                   .MakeGenericMethod(new[] { info.ReturnInnerType }));
             il.Emit(OpCodes.Ret);
 
@@ -247,7 +247,7 @@ namespace NetStitch
                 parameterInfo.Select(x => x.ParameterType).ToArray()
                 );
 
-            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(MessagePackObjectAttribute).GetTypeInfo().GetConstructor(new Type[] { typeof(bool) }), new object[] { false }));
+            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(MessagePackObjectAttribute).GetConstructor(new Type[] { typeof(bool) }), new object[] { false }));
 
             var il = ctor.GetILGenerator();
 
@@ -256,7 +256,7 @@ namespace NetStitch
             foreach (var item in seq)
             {
                 var field = typeBuilder.DefineField(item.name, item.parameterType, FieldAttributes.Public);
-                field.SetCustomAttribute(new CustomAttributeBuilder(typeof(KeyAttribute).GetTypeInfo().GetConstructor(new[] { typeof(int) }), new object[] { item.index }));
+                field.SetCustomAttribute(new CustomAttributeBuilder(typeof(KeyAttribute).GetConstructor(new[] { typeof(int) }), new object[] { item.index }));
                 il.Emit(OpCodes.Ldarg_0);
                 il.Emit(OpCodes.Ldarg_S, item.index + 1);
                 il.Emit(OpCodes.Stfld, field);

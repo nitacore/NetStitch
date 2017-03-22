@@ -62,7 +62,7 @@ namespace NetStitch.Server
              x => x.interfaceType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance),
             (x, methodInfo) =>
             {
-                var targetMethod = x.targetType.GetTypeInfo().GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
+                var targetMethod = x.targetType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
                 .Single(m => IsSameNamesapceAndMethodName(m, methodInfo) &&
                 m.CallingConvention == methodInfo.CallingConvention &&
                 m.ReturnType == methodInfo.ReturnType &&
