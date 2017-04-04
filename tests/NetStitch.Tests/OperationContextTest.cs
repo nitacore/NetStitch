@@ -12,27 +12,33 @@ using NetStitch.Server;
 
 namespace NetStitch.Tests
 {
+    using NetStitch.Tests.Client;
+
+    [Collection(nameof(ServerCollection))]
     public class OperationContextTest
     {
+
+        ServerFixture server;
+        public OperationContextTest(ServerFixture server)
+        {
+            this.server = server;
+        }
+
         [Fact]
         public async Task OperationContext()
         {
-            var config = new ConfigurationBuilder().Build();
-
-            var host = new WebHostBuilder()
-                .UseConfiguration(config)
-                .UseStartup<Startup>();
-
-            using (var server = new TestServer(host))
-            {
-                var client = server.CreateClient();
-                var stub = new NetStitchClient("http://localhost/", client).Create<client.IOperationContext>();
-                var result = await stub.HttpContextTestAsync("test");
-                Assert.Equal(result, "test");
-            }
+            var stub = server.CreateStub<IOperationContextTest>();
+            var result = await stub.HttpContextTestAsync("test");
+            Assert.Equal(result, "test");
         }
     }
-    public class OperationContextTests : server.IOperationContextTest, IOperationContext
+}
+
+namespace NetStitch.Tests
+{
+    using NetStitch.Tests.Server;
+
+    public class OperationContextServer : IOperationContextTest, IOperationContext
     {
         public OperationContext Context { get; set; }
 
@@ -41,29 +47,6 @@ namespace NetStitch.Tests
             Context.HttpContext.Items.Add("a", myString);
 
             return Context.HttpContext.Items["a"].ToString();
-        }
-    }
-    namespace client
-    {
-        [NetStitchContract]
-        public interface IOperationContext
-        {
-            [Operation("HttpContextTest")]
-            Task<string> HttpContextTestAsync(
-                string myString,
-                System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
-            );
-        }
-    }
-    namespace server
-    {
-        [NetStitchContract]
-        public interface IOperationContextTest
-        {
-            [Operation("HttpContextTest")]
-            string HttpContextTest(
-                string myString
-                );
         }
     }
 }

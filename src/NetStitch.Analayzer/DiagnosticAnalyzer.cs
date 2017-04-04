@@ -59,7 +59,7 @@ namespace NetStitch.Analayzer
 
             var interfaceSymbol = model.GetDeclaredSymbol(interfaceSyntax);
             if (interfaceSymbol == null) return;
-            if (!interfaceSymbol.GetAttributes().Any(x => x.AttributeClass.Name == "NetStitchContractAttribute"))
+            if (!interfaceSymbol.Interfaces.Any(x => x.Name == "INetStitchContract"))
                 return;
 
             if (interfaceSymbol.DeclaredAccessibility != Accessibility.Public)

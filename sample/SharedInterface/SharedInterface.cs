@@ -9,8 +9,7 @@ using MessagePack;
 
 namespace SharedInterface
 {
-    [NetStitchContract]
-    public interface IComplexType
+    public interface IComplexType : INetStitchContract
     {
         [NetStitch.Operation("a885e7c2-4305-4d2c-8428-9936125641a7")]
 #if !___server___
@@ -32,8 +31,7 @@ namespace SharedInterface
         );
     }
 
-    [NetStitchContract]
-    public interface IAsyncTest
+    public interface IAsyncTest : INetStitchContract
     {
         [NetStitch.Operation("49cace09-8ad4-4ea7-84fc-09c3582a274e")]
         Task<int> TestAsync(int a, int b
@@ -43,9 +41,7 @@ namespace SharedInterface
         );
     }
 
-
-    [NetStitchContract]
-    public interface IEcho
+    public interface IEcho : INetStitchContract
     {
         [NetStitch.Operation("d1ae3ebb-1743-46d7-acc7-1f4afc0f7592")]
 #if !___server___
@@ -86,8 +82,7 @@ namespace SharedInterface
 
     }
 
-    [NetStitchContract]
-    public interface IPerf
+    public interface IPerf : INetStitchContract
     {
         [NetStitch.Operation("6afa8955-4f73-4a45-8795-b980763a7182")]
 #if !___server___

@@ -37,7 +37,7 @@ namespace NetStitch.Server
             });
 
             var seq = types
-            .Where(x => x.GetTypeInfo().GetCustomAttribute<NetStitchContractAttribute>() != null)
+            .Where(x => x.GetInterfaces().Any(t => t == typeof(INetStitchContract)))
             .Select(x =>
             {
                 try
@@ -56,30 +56,30 @@ namespace NetStitch.Server
             })
             .Where(x => x.targetType != null)
             .Where(x => x.targetType.GetTypeInfo().IsAbstract == false)
-            //.Select(x => x.classType.GetInterfaceMap(x.interfaceType)) 
+            .Select(x => x.targetType.GetTypeInfo().GetRuntimeInterfaceMap(x.interfaceType)) 
             .SelectMany(
-            //x => x.TargetMethods.Zip(x.InterfaceMethods, (targetMethod, interfaceMethod) => new { targetMethod, interfaceMethod }),
-             x => x.interfaceType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance),
-            (x, methodInfo) =>
+            x => x.TargetMethods.Zip(x.InterfaceMethods, (targetMethod, interfaceMethod) => new { targetMethod, interfaceMethod }),
+            //x => x.interfaceType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance),
+            (x, methods) =>
             {
-                var targetMethod = x.targetType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                .Single(m => IsSameNamesapceAndMethodName(m, methodInfo) &&
-                m.CallingConvention == methodInfo.CallingConvention &&
-                m.ReturnType == methodInfo.ReturnType &&
-                m.GetGenericArguments().SequenceEqual(methodInfo.GetGenericArguments()) &&
-                m.GetParameters().Select(p => p.ParameterType).SequenceEqual(methodInfo.GetParameters().Select(p => p.ParameterType)));
+                //var targetMethod = x.targetType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
+                //.Single(m => IsSameNamesapceAndMethodName(m, methodInfo) &&
+                //m.CallingConvention == methodInfo.CallingConvention &&
+                //m.ReturnType == methodInfo.ReturnType &&
+                //m.GetGenericArguments().SequenceEqual(methodInfo.GetGenericArguments()) &&
+                //m.GetParameters().Select(p => p.ParameterType).SequenceEqual(methodInfo.GetParameters().Select(p => p.ParameterType)));
                 return new
                 {
-                    x.targetType,
-                    x.interfaceType,
-                    targetMethod,
-                    interfaceMethod = methodInfo,
+                    x.TargetType,
+                    x.InterfaceType,
+                    methods.targetMethod,
+                    methods.interfaceMethod,
                 };
             });
 
             foreach (var element in seq)
             {
-                var op = new OperationController(element.targetType, element.interfaceType, element.targetMethod, element.interfaceMethod, option);
+                var op = new OperationController(element.TargetType, element.InterfaceType, element.targetMethod, element.interfaceMethod, option);
                 OperationDic.Add(op.OperationID, op);
             }
 

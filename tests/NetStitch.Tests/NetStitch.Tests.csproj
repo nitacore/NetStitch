@@ -18,6 +18,8 @@
     <ProjectReference Include="..\..\src\NetStitch.Client\NetStitch.Client.csproj" />
     <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj" />
     <ProjectReference Include="..\..\src\NetStitch.Server\NetStitch.Server.csproj" />
+    <ProjectReference Include="..\NetStitch.Tests.Client\NetStitch.Tests.ClientDefinitions.csproj" />
+    <ProjectReference Include="..\NetStitch.Tests.Server\NetStitch.Tests.ServerDefinitions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
