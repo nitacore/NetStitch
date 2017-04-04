@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_4;___server___</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="..\NetStitch.Tests.SharedProject\NetStitch.Tests.SharedProject.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj" />
+  </ItemGroup>
+
+</Project>

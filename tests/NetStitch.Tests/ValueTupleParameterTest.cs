@@ -11,28 +11,30 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace NetStitch.Tests
 {
+    using NetStitch.Tests.Client;
+
+    [Collection(nameof(ServerCollection))]
     public class ValueTupleParameterTest
     {
+        ServerFixture server;
+        public ValueTupleParameterTest(ServerFixture server)
+        {
+            this.server = server;
+        }
         [Fact]
         public async Task ValueTupleParameter()
         {
-            var config = new ConfigurationBuilder().Build();
+            var stub = server.CreateStub<IValueTupleParameterTest>();
+            await stub.ValueTupleParameterTestAsync( ( a:1, (b:2, c:3)) );
+            await stub.ValueTupleParameterTest2Async( (4, 5) );
 
-            var host = new WebHostBuilder()
-                .UseConfiguration(config)
-                .UseStartup<Startup>();
-
-            using (var server = new TestServer(host))
-            {
-                var client = server.CreateClient();
-                var stub = new NetStitchClient("http://localhost/", client).Create<client.IValueTupleParameterTest>();
-                await stub.ValueTupleParameterTestAsync( ( a:1, (b:2, c:3)) );
-                await stub.ValueTupleParameterTest2Async( (4, 5) );
-
-            }
         }
     }
-    public class ValueTupleParameterTests : server.IValueTupleParameterTest
+}
+namespace NetStitch.Tests
+{
+    using NetStitch.Tests.Server;
+    public class ValueTupleParameterServer : IValueTupleParameterTest
     {
 
         public (int a, (int b, int c) d) ValueTupleParameterTest((int a, (int b, int c) d) valuetuple)
@@ -50,37 +52,5 @@ namespace NetStitch.Tests
             return valuetuple;
         }
 
-    }
-    namespace client
-    {
-        [NetStitchContract]
-        public interface IValueTupleParameterTest
-        {
-            [Operation("ValueTupleParameterTest")]
-            Task<(int a, (int b, int c) d)> ValueTupleParameterTestAsync(
-                (int a, (int b, int c) d) valuetuple
-                , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
-            );
-            [Operation("ValueTupleParameterFlagTest")]
-            Task<(int a, int b)> ValueTupleParameterTest2Async(
-                (int a, int b) valuetuple
-                , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
-);
-        }
-    }
-    namespace server
-    {
-        [NetStitchContract]
-        public interface IValueTupleParameterTest
-        {
-            [Operation("ValueTupleParameterTest")]
-            (int a, (int b, int c) d) ValueTupleParameterTest(
-                (int a, (int b, int c) d) valuetuple
-                );
-            [Operation("ValueTupleParameterFlagTest")]
-            (int a, int b) ValueTupleParameterTest2(
-                (int a, int b) valuetuple
-                );
-        }
     }
 }

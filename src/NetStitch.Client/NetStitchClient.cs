@@ -37,6 +37,7 @@ namespace NetStitch
         }
 
         public T Create<T>()
+            where T : INetStitchContract
         {
             var type = typeof(T);
 
