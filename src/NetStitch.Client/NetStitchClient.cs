@@ -16,6 +16,7 @@ namespace NetStitch
     {
         readonly protected string endpoint;
         readonly protected HttpClient client;
+        readonly protected IFormatterResolver formatterResolver;
 
         private readonly IDictionary<RuntimeTypeHandle, object> operationDic =
             new Dictionary<RuntimeTypeHandle, object>(new RuntimeTypeHandleEqualityComparer());
@@ -25,15 +26,25 @@ namespace NetStitch
         }
 
         public NetStitchClient(string endpoint)
-            : this(endpoint, new HttpClient()) { }
-
-        public NetStitchClient(string endpoint, HttpMessageHandler handler)
-            : this(endpoint, new HttpClient(handler, false)) { }
+            : this(endpoint, new HttpClient(), MessagePack.Resolvers.StandardResolver.Instance) { }
 
         public NetStitchClient(string endpoint, HttpClient client)
+            : this(endpoint, client, MessagePack.Resolvers.StandardResolver.Instance) { }
+
+        public NetStitchClient(string endpoint, HttpMessageHandler handler)
+            : this(endpoint, new HttpClient(handler, false), MessagePack.Resolvers.StandardResolver.Instance) { }
+
+        public NetStitchClient(string endpoint, IFormatterResolver formatterResolver)
+            : this(endpoint, new HttpClient(), formatterResolver) { }
+
+        public NetStitchClient(string endpoint, HttpMessageHandler handler, IFormatterResolver formatterResolver)
+            : this(endpoint, new HttpClient(handler, false), formatterResolver) { }
+
+        public NetStitchClient(string endpoint, HttpClient client, IFormatterResolver formatterResolver)
         {
             this.endpoint = endpoint.TrimEnd('/');
             this.client = client;
+            this.formatterResolver = formatterResolver;
         }
 
         public T Create<T>()
@@ -52,7 +63,7 @@ namespace NetStitch
                 }
             }
             return (T)result;
-        }
+        } 
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public virtual async Task PostAsync(HttpContent content, string operationID, CancellationToken cancellationToken)
@@ -66,7 +77,7 @@ namespace NetStitch
         {
             var response = await client.PostAsync(endpoint + "/" + operationID, content, cancellationToken).ConfigureAwait(false);
             var bytes = await response.EnsureSuccessStatusCode().Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-            return LZ4MessagePackSerializer.Deserialize<T>(bytes);
+            return LZ4MessagePackSerializer.Deserialize<T>(bytes, formatterResolver);
         }
 
         private class DynamicType<T>
@@ -94,19 +105,19 @@ namespace NetStitch
                                 //TypeAttributes.AnsiClass |
                                 //TypeAttributes.BeforeFieldInit |
                                 //TypeAttributes.AutoLayout
-                                , null, new Type[] { interfaceType });
+                                , null, new Type[] { interfaceType });                                
             typeBuilder.AddInterfaceImplementation(interfaceType);
 
             var clientField = typeBuilder.DefineField("_client", typeof(NetStitchClient), FieldAttributes.Private);
 
-            var aCtor = typeBuilder.DefineConstructor(
+            var ctor = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,
                 CallingConventions.Standard,
                 new Type[] {
                     typeof(NetStitchClient),
                 });
 
-            var myConstructorIL = aCtor.GetILGenerator();
+            var myConstructorIL = ctor.GetILGenerator();
 
             //NetStitchClient
             myConstructorIL.Emit(OpCodes.Ldarg_0);
@@ -114,7 +125,7 @@ namespace NetStitch
             myConstructorIL.Emit(OpCodes.Stfld, clientField);
             myConstructorIL.Emit(OpCodes.Ret);
 
-            var info = interfaceType.GetMethods()
+            var info = interfaceType.GetRuntimeMethods()
             .Select(x =>
             new
             {
@@ -154,6 +165,21 @@ namespace NetStitch
             public Type ReturnType;
         }
 
+        static ConstructorInfo constructorMediaTypeHeaderValue => typeof(System.Net.Http.Headers.MediaTypeHeaderValue)
+            .GetTypeInfo().DeclaredConstructors
+            .First(x => { var p = x.GetParameters(); return p.Length == 1 && p[0].ParameterType == typeof(string); });
+
+        static MethodInfo setContentType = typeof(System.Net.Http.Headers.HttpContentHeaders).GetRuntimeProperty("ContentType").SetMethod;
+
+        static ConstructorInfo constructorByteArrayContent => typeof(ByteArrayContent).GetTypeInfo()
+            .DeclaredConstructors.First(x => x.GetParameters().Length > 1);
+
+        static ConstructorInfo constructorMessagePackObjectAttribute = typeof(MessagePackObjectAttribute).GetTypeInfo()
+            .DeclaredConstructors.First(x => x.GetParameters().Length > 0);
+
+        static ConstructorInfo constructorMessagePackKeyAttribute = typeof(KeyAttribute).GetTypeInfo()
+            .DeclaredConstructors.First(x => { var p = x.GetParameters(); return p.Length == 1 && p[0].ParameterType == typeof(int); });
+
         private static MethodBuilder CreateMethod(OperationInfo info, TypeBuilder thisType, FieldBuilder clientField)
         {
 
@@ -173,9 +199,9 @@ namespace NetStitch
 
             var methodParameterType = CreateParameterSturctType(info.InterfaceType, info.MethodInfo, info.Parameters);
 
-            var pCtor = methodParameterType.GetConstructor(info.Parameters.Select(x => x.ParameterType).ToArray());
+            var pCtor = methodParameterType.GetTypeInfo().DeclaredConstructors.First(x => x.GetParameters().Length > 0);
 
-            var serializer = typeof(LZ4MessagePackSerializer).GetMethods()
+            var serializer = typeof(LZ4MessagePackSerializer).GetRuntimeMethods()
                 .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) && x.IsGenericMethod && x.GetParameters().Length == 1)
                 .MakeGenericMethod(methodParameterType);
 
@@ -195,17 +221,17 @@ namespace NetStitch
             il.Emit(OpCodes.Ldloc, bytes);
             il.Emit(OpCodes.Ldlen);
 
-            il.Emit(OpCodes.Newobj, typeof(ByteArrayContent).GetConstructor(new[] { typeof(byte[]), typeof(int), typeof(int) }));
+            il.Emit(OpCodes.Newobj, constructorByteArrayContent);
 
             var byteArrayContent = il.DeclareLocal(typeof(ByteArrayContent));
             il.Emit(OpCodes.Stloc, byteArrayContent);
             il.Emit(OpCodes.Ldloc, byteArrayContent);
 
             //Set ContentType
-            il.Emit(OpCodes.Callvirt, typeof(ByteArrayContent).GetMethod("get_Headers", BindingFlags.Public | BindingFlags.Instance));
+            il.Emit(OpCodes.Callvirt, typeof(ByteArrayContent).GetRuntimeProperty("Headers").GetMethod);
             il.Emit(OpCodes.Ldstr, "application/octet-stream");
-            il.Emit(OpCodes.Newobj, typeof(System.Net.Http.Headers.MediaTypeHeaderValue).GetConstructor(new Type[] { typeof(string) }));
-            il.Emit(OpCodes.Callvirt, typeof(System.Net.Http.Headers.HttpContentHeaders).GetMethod("set_ContentType", BindingFlags.Public | BindingFlags.Instance));
+            il.Emit(OpCodes.Newobj, constructorMediaTypeHeaderValue);
+            il.Emit(OpCodes.Callvirt, setContentType);
 
             il.Emit(OpCodes.Ldloc, byteArrayContent);
 
@@ -217,8 +243,8 @@ namespace NetStitch
 
             //PostAsync or PostAsync<T>
             il.Emit(OpCodes.Callvirt, info.ReturnInnerType == null ?
-               typeof(NetStitchClient).GetMethods().First(x => x.Name == "PostAsync" && !x.IsGenericMethod) :
-               typeof(NetStitchClient).GetMethods().First(x => x.Name == "PostAsync" && x.IsGenericMethod)
+               typeof(NetStitchClient).GetTypeInfo().DeclaredMethods.First(x => x.Name == "PostAsync" && !x.IsGenericMethod) :
+               typeof(NetStitchClient).GetTypeInfo().DeclaredMethods.First(x => x.Name == "PostAsync" && x.IsGenericMethod)
                   .MakeGenericMethod(new[] { info.ReturnInnerType }));
             il.Emit(OpCodes.Ret);
 
@@ -247,7 +273,7 @@ namespace NetStitch
                 parameterInfo.Select(x => x.ParameterType).ToArray()
                 );
 
-            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(MessagePackObjectAttribute).GetConstructor(new Type[] { typeof(bool) }), new object[] { false }));
+            typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(constructorMessagePackObjectAttribute, new object[] { false }));
 
             var il = ctor.GetILGenerator();
 
@@ -256,7 +282,7 @@ namespace NetStitch
             foreach (var item in seq)
             {
                 var field = typeBuilder.DefineField(item.name, item.parameterType, FieldAttributes.Public);
-                field.SetCustomAttribute(new CustomAttributeBuilder(typeof(KeyAttribute).GetConstructor(new[] { typeof(int) }), new object[] { item.index }));
+                field.SetCustomAttribute(new CustomAttributeBuilder(constructorMessagePackKeyAttribute, new object[] { item.index }));
                 il.Emit(OpCodes.Ldarg_0);
                 il.Emit(OpCodes.Ldarg_S, item.index + 1);
                 il.Emit(OpCodes.Stfld, field);
@@ -267,6 +293,7 @@ namespace NetStitch
             return typeBuilder.CreateTypeInfo().AsType();
 
         }
+
     }
 
     public class RuntimeTypeHandleEqualityComparer : IEqualityComparer<RuntimeTypeHandle>

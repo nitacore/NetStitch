@@ -14,8 +14,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="1.0.3" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetStitch.Common\NetStitch.Common.csproj" />
