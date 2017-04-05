@@ -51,7 +51,7 @@ namespace NetStitchClientConsole
                     Console.WriteLine(result.Sum);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

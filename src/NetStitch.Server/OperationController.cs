@@ -25,7 +25,7 @@ namespace NetStitch.Server
         public readonly Type ClassType;
         public readonly Type InterfaceType;
         public readonly MethodInfo MethodInfo;
-        public readonly Type ParameterStructType;
+        public readonly Type ParameterType;
         public readonly IFormatterResolver FormatterResolver;
         
         private readonly Action<OperationContext> action;
@@ -78,13 +78,43 @@ namespace NetStitch.Server
 
         }
 
+        readonly static ParameterExpression operationContext = Expression.Parameter(typeof(OperationContext), nameof(OperationContext));
+
+        readonly static MemberAssignment bindContext = Expression.Bind(typeof(IOperationContext).GetProperty(nameof(IOperationContext.Context)), operationContext);
+
+        readonly static Expression resolverProperty = Expression.Property(operationContext, nameof(OperationContext.FormatterResolver));
+
+        readonly static MethodInfo callDeserializer = typeof(LZ4MessagePackSerializer).GetMethods()
+            .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Deserialize)) &&
+                        x.IsGenericMethod &&
+                        x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream) &&
+                        x.GetParameters().Length == 2));
+
+        readonly static MethodInfo callSerializer = typeof(LZ4MessagePackSerializer).GetMethods()
+            .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) &&
+                        x.IsGenericMethod &&
+                        x.GetParameters().Length == 2);
+
+        readonly static Expression httpRequestBody =
+            Expression.Property(
+                Expression.Property(
+                    Expression.Property(operationContext,
+                        nameof(HttpContext)),
+                    nameof(HttpContext.Request)),
+                nameof(HttpRequest.Body));
+
         public OperationController(Type targetType, Type interfaceType, MethodInfo targetMethodInfo, MethodInfo interfaceMethodInfo, NetStitchOption option)
         {
+
+            ParameterInfo[] parameterInfos = targetMethodInfo.GetParameters();
 
             this.ClassType = targetType;
             this.InterfaceType = interfaceType;
             this.MethodInfo = targetMethodInfo;
-            this.ParameterStructType = CreateParameterSturctType(interfaceType, targetMethodInfo);
+            this.ParameterType = parameterInfos.Length == 0 ? null :
+                                 parameterInfos.Length == 1 ? parameterInfos[0].ParameterType :
+                                 CreateParameterSturctType(interfaceType, targetMethodInfo);
+
             this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
 
             bool requiresOperationContext = targetType.GetInterfaces().Any(x => x == typeof(IOperationContext));
@@ -95,45 +125,43 @@ namespace NetStitch.Server
 
             Type asyncRetunType = targetMethodInfo.ReturnType.GenericTypeArguments.FirstOrDefault();
 
-            MethodInfo deserializeMethod = typeof(LZ4MessagePackSerializer).GetMethods()
-                                           .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Deserialize)) &&
-                                                       x.IsGenericMethod &&
-                                                       x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream) && 
-                                                       x.GetParameters().Length == 2))
-                                           .MakeGenericMethod(new Type[] { ParameterStructType });
-
-            // Context
-            var operationContext = Expression.Parameter(typeof(OperationContext), nameof(OperationContext));
-            var bindContext = Expression.Bind(typeof(IOperationContext).GetProperty(nameof(IOperationContext.Context)), operationContext);
-
             // new Class() or new Class() { Context = Context }
             var newClass = requiresOperationContext ?
             Expression.MemberInit(Expression.New(targetType), bindContext) :
             Expression.MemberInit(Expression.New(targetType));
 
-            // Context.HttpContext.Request.Body
-            var httpContext = Expression.Property(operationContext, nameof(HttpContext));
-            var request = Expression.Property(httpContext, nameof(HttpContext.Request));
-            var body = Expression.Property(request, nameof(HttpRequest.Body));
+            Expression callOperation;
+            if (parameterInfos.Length == 0)
+            {
+                callOperation = Expression.Call(newClass, targetMethodInfo);
+            }
+            else if (parameterInfos.Length == 1)
+            {
+                MethodInfo deserializeMethod = callDeserializer.MakeGenericMethod(new Type[] { this.ParameterType });
+                // ParameterType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
+                var deserializedObj = Expression.Call(null, deserializeMethod, httpRequestBody, resolverProperty);
+                callOperation = Expression.Call(newClass, targetMethodInfo, deserializedObj);
+            }
+            else
+            {
+                MethodInfo deserializeMethod = callDeserializer.MakeGenericMethod(new Type[] { this.ParameterType });
 
-            //Resolver
-            var formatterResolver = Expression.Parameter(typeof(IFormatterResolver), nameof(IFormatterResolver));
-            var resolverProperty = Expression.Property(operationContext, nameof(OperationContext.FormatterResolver));
+                // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
+                var deserialize = Expression.Call(null, deserializeMethod, httpRequestBody, resolverProperty);
+                var obj = Expression.Parameter(ParameterType, "obj");
+                var assign = Expression.Assign(obj, deserialize);
 
-            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
-            var deserialize = Expression.Call(null, deserializeMethod, body, resolverProperty);
-            var obj = Expression.Parameter(ParameterStructType, "obj");
-            var assign = Expression.Assign(obj, deserialize);
+                // obj.field1, obj.field2, ...
+                var args = targetMethodInfo.GetParameters().Select(x => Expression.Field(obj, x.Name)).ToArray();
 
-            // obj.field1, obj.field2, ...
-            var args = targetMethodInfo.GetParameters().Select(x => Expression.Field(obj, x.Name)).ToArray();
+                // new Class().Method(obj.field1, obj.field2, ...)
+                var callMethod = Expression.Call(newClass, targetMethodInfo, args);
 
-            // new Class().Method(obj.field1, obj.field2, ...)
-            var callMethod = Expression.Call(newClass, targetMethodInfo, args);
+                // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
+                // new Class().Method(obj.field1, obj.field2, ...)
+                callOperation = Expression.Block(new[] { obj }, assign, callMethod);
 
-            // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
-            // new Class().Method(obj.field1, obj.field2, ...)
-            var block = Expression.Block(new[] { obj }, assign, callMethod);
+            }
 
             // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
             // AsyncExecute(new Class().Method(obj.field1, obj.field2, ...))
@@ -143,7 +171,7 @@ namespace NetStitch.Server
                     typeof(OperationController).GetMethod(nameof(OperationController.AsyncFunction)).MakeGenericMethod(asyncRetunType) :
                     typeof(OperationController).GetMethod(nameof(OperationController.AsyncAction));
 
-                var taskExecute = Expression.Call(null, asyncExecuteMethodInfo, operationContext, block);
+                var taskExecute = Expression.Call(null, asyncExecuteMethodInfo, operationContext, callOperation);
                 var lambda = Expression.Lambda<Func<OperationContext, Task>>(taskExecute, operationContext);
                 OperationAsync = lambda.Compile();
             }
@@ -153,22 +181,18 @@ namespace NetStitch.Server
                 // new Class().Method(obj.field1, obj.field2, ...)
                 if (targetMethodInfo.ReturnType == typeof(void))
                 {
-                    var lambda = Expression.Lambda<Action<OperationContext>>(block, operationContext);
+                    var lambda = Expression.Lambda<Action<OperationContext>>(callOperation, operationContext);
                     this.action = lambda.Compile();
                     this.OperationAsync = (Func<OperationContext, Task>)this.GetType().GetMethod("Action").CreateDelegate(typeof(Func<OperationContext, Task>), this);
                 }
                 else
                 {
 
-                    MethodInfo serializeMethod = typeof(LZ4MessagePackSerializer).GetMethods()
-                                                 .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) &&
-                                                             x.IsGenericMethod &&
-                                                             x.GetParameters().Length == 2)
-                                                 .MakeGenericMethod(new Type[] { this.MethodInfo.ReturnType });
+                    MethodInfo serializeMethod = callSerializer.MakeGenericMethod(new Type[] { this.MethodInfo.ReturnType });
 
                     // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
                     // LZ4MessagePackSerializer.Serialize<TReturnType>(new Class().Method(obj.field1, obj.field2, ...))
-                    var excecute = Expression.Call(null, serializeMethod, block, resolverProperty);
+                    var excecute = Expression.Call(null, serializeMethod, callOperation, resolverProperty);
                     var lambda = Expression.Lambda<Func<OperationContext, byte[]>>(excecute, operationContext);
                     this.function = lambda.Compile();
                     this.OperationAsync = (Func<OperationContext, Task>)this.GetType().GetMethod("Function").CreateDelegate(typeof(Func<OperationContext, Task>), this);
@@ -220,7 +244,7 @@ namespace NetStitch.Server
         {
             action(Context);
             Context.HttpContext.Response.StatusCode = HttpStatus.NoContent;
-            await TaskDone.Done;
+            await Task.CompletedTask.ConfigureAwait(false);
         }
 
         public async Task Function(OperationContext Context)
@@ -230,11 +254,6 @@ namespace NetStitch.Server
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
             await responce.Body.WriteAsync(result, 0, result.Length);
-        }
-
-        public static class TaskDone
-        {
-            public static Task Done => Task.FromResult(1);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace NetStitch
 
         public MethodInfo MethodInfo => operationController.MethodInfo;
 
-        public Type ParameterStructType => operationController.ParameterStructType;
+        public Type ParameterStructType => operationController.ParameterType;
 
         public string OperationID => operationController.OperationID;
 

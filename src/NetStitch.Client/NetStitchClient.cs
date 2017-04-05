@@ -56,7 +56,7 @@ namespace NetStitch
             object result;
             if (!operationDic.TryGetValue(type.TypeHandle, out result))
             {
-                result = Activator.CreateInstance(DynamicType<T>.Type, this);
+                result = Activator.CreateInstance(DynamicType<T>.Type, this, formatterResolver);
                 lock (operationDic)
                 {
                     if (!operationDic.ContainsKey(type.TypeHandle))
@@ -110,12 +110,14 @@ namespace NetStitch
             typeBuilder.AddInterfaceImplementation(interfaceType);
 
             var clientField = typeBuilder.DefineField("_client", typeof(NetStitchClient), FieldAttributes.Private);
+            var resolverField = typeBuilder.DefineField("_resolver", typeof(IFormatterResolver), FieldAttributes.Private);
 
             var ctor = typeBuilder.DefineConstructor(
                 MethodAttributes.Public,
                 CallingConventions.Standard,
                 new Type[] {
                     typeof(NetStitchClient),
+                    typeof(IFormatterResolver),
                 });
 
             var myConstructorIL = ctor.GetILGenerator();
@@ -124,6 +126,9 @@ namespace NetStitch
             myConstructorIL.Emit(OpCodes.Ldarg_0);
             myConstructorIL.Emit(OpCodes.Ldarg_1);
             myConstructorIL.Emit(OpCodes.Stfld, clientField);
+            myConstructorIL.Emit(OpCodes.Ldarg_0);
+            myConstructorIL.Emit(OpCodes.Ldarg_2);
+            myConstructorIL.Emit(OpCodes.Stfld, resolverField);
             myConstructorIL.Emit(OpCodes.Ret);
 
             var info = interfaceType.GetRuntimeMethods()
@@ -147,7 +152,7 @@ namespace NetStitch
             });
             foreach (var method in info)
             {
-                var mb = CreateMethod(method, typeBuilder, clientField);
+                var mb = CreateMethod(method, typeBuilder, clientField, resolverField);
                 typeBuilder.DefineMethodOverride(mb, method.MethodInfo);
             }
 
@@ -166,22 +171,18 @@ namespace NetStitch
             public Type ReturnType;
         }
 
-        static ConstructorInfo constructorMediaTypeHeaderValue => typeof(System.Net.Http.Headers.MediaTypeHeaderValue)
-            .GetTypeInfo().DeclaredConstructors
-            .First(x => { var p = x.GetParameters(); return p.Length == 1 && p[0].ParameterType == typeof(string); });
-
-        static MethodInfo setContentType = typeof(System.Net.Http.Headers.HttpContentHeaders).GetRuntimeProperty("ContentType").SetMethod;
-
-        static ConstructorInfo constructorByteArrayContent => typeof(ByteArrayContent).GetTypeInfo()
-            .DeclaredConstructors.First(x => x.GetParameters().Length > 1);
-
         static ConstructorInfo constructorMessagePackObjectAttribute = typeof(MessagePackObjectAttribute).GetTypeInfo()
             .DeclaredConstructors.First(x => x.GetParameters().Length > 0);
 
         static ConstructorInfo constructorMessagePackKeyAttribute = typeof(KeyAttribute).GetTypeInfo()
             .DeclaredConstructors.First(x => { var p = x.GetParameters(); return p.Length == 1 && p[0].ParameterType == typeof(int); });
 
-        private static MethodBuilder CreateMethod(OperationInfo info, TypeBuilder thisType, FieldBuilder clientField)
+        static MethodInfo callMessagePackSerialize = typeof(LZ4MessagePackSerializer).GetRuntimeMethods()
+            .First(x => x.Name == "Serialize" && x.GetParameters().Length == 2 && x.ReturnType == typeof(byte[]));
+
+        static FieldInfo empty = typeof(ContentHelper).GetTypeInfo().GetDeclaredField(nameof(ContentHelper.Empty));
+
+        private static MethodBuilder CreateMethod(OperationInfo info, TypeBuilder thisType, FieldBuilder clientField, FieldBuilder resolverField)
         {
 
             var method = thisType.DefineMethod(
@@ -196,45 +197,33 @@ namespace NetStitch
             il.Emit(OpCodes.Ldfld, clientField);
 
             //HttpContent
-            var bytes = il.DeclareLocal(typeof(byte[]));
-
-            var methodParameterType = CreateParameterSturctType(info.InterfaceType, info.MethodInfo, info.Parameters);
-
-            var pCtor = methodParameterType.GetTypeInfo().DeclaredConstructors.First(x => x.GetParameters().Length > 0);
-
-            var serializer = typeof(LZ4MessagePackSerializer).GetRuntimeMethods()
-                .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) && x.IsGenericMethod && x.GetParameters().Length == 1)
-                .MakeGenericMethod(methodParameterType);
-
-            //ByteArrayContent
-            for (int i = 0; i < info.Parameters.Length; i++)
+            if (info.Parameters.Length == 0)
             {
-                il.Emit(OpCodes.Ldarg_S, i + 1);  // arg0 = this
+                il.Emit(OpCodes.Ldsfld, empty);
+            }
+            else if (info.Parameters.Length == 1)
+            {
+                il.Emit(OpCodes.Ldarg_1);
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldfld, resolverField);
+                il.Emit(OpCodes.Call, callMessagePackSerialize.MakeGenericMethod(info.Parameters[0].ParameterType));
+            }
+            else
+            {
+                var methodParameterType = CreateParameterSturctType(info.InterfaceType, info.MethodInfo, info.Parameters);
+                var parameterTypeConstructor = methodParameterType.GetTypeInfo().DeclaredConstructors.First(x => x.GetParameters().Length > 0);
+                for (int i = 0; i < info.Parameters.Length; i++)
+                {
+                    il.Emit(OpCodes.Ldarg_S, i + 1);  // arg0 = this
+                }
+                il.Emit(OpCodes.Newobj, parameterTypeConstructor);
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldfld, resolverField);
+                il.Emit(OpCodes.Call, callMessagePackSerialize.MakeGenericMethod(methodParameterType));
             }
 
-            il.Emit(OpCodes.Newobj, pCtor);
-
-            il.Emit(OpCodes.Call, serializer);
-
-            il.Emit(OpCodes.Stloc, bytes);
-            il.Emit(OpCodes.Ldloc, bytes);
-            il.Emit(OpCodes.Ldc_I4_0);
-            il.Emit(OpCodes.Ldloc, bytes);
-            il.Emit(OpCodes.Ldlen);
-
-            il.Emit(OpCodes.Newobj, constructorByteArrayContent);
-
-            var byteArrayContent = il.DeclareLocal(typeof(ByteArrayContent));
-            il.Emit(OpCodes.Stloc, byteArrayContent);
-            il.Emit(OpCodes.Ldloc, byteArrayContent);
-
-            //Set ContentType
-            il.Emit(OpCodes.Callvirt, typeof(ByteArrayContent).GetRuntimeProperty("Headers").GetMethod);
-            il.Emit(OpCodes.Ldstr, "application/octet-stream");
-            il.Emit(OpCodes.Newobj, constructorMediaTypeHeaderValue);
-            il.Emit(OpCodes.Callvirt, setContentType);
-
-            il.Emit(OpCodes.Ldloc, byteArrayContent);
+            //ByteArrayContent
+            il.Emit(OpCodes.Call, typeof(ContentHelper).GetRuntimeMethod(nameof(ContentHelper.CreateHttpContent), new[] { typeof(byte[]) }));
 
             //operationID
             il.Emit(OpCodes.Ldstr, info.OperationID);
@@ -304,6 +293,18 @@ namespace NetStitch
 
         public int GetHashCode(RuntimeTypeHandle obj)
             => obj.GetHashCode();
+    }
+
+    public static class ContentHelper
+    {
+        public static byte[] Empty = Array.Empty<byte>();
+
+        public static HttpContent CreateHttpContent(byte[] bytes)
+        {
+            var content = new ByteArrayContent(bytes, 0, bytes.Length);
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+            return content;
+        }
     }
 
 }
