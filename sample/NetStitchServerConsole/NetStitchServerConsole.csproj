@@ -23,6 +23,7 @@
     <DefineConstants>TRACE;DEBUG;___server___</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>1998</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -280,9 +281,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\NetStitch.Analyzer.0.0.5-alpha\analyzers\dotnet\cs\NetStitch.Analayzer.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\NetStitch.Common\NetStitch.Common.csproj">
       <Project>{dcae581c-c0a4-4feb-b547-ec5066c4b65e}</Project>
       <Name>NetStitch.Common</Name>
@@ -293,6 +291,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\SharedInterface\SharedInterface.projitems" Label="Shared" />
+  <Import Project="..\..\SharedProjectValueTask\SharedProjectValueTask.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

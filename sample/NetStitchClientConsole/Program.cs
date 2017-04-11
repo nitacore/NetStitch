@@ -22,34 +22,46 @@ namespace NetStitchClientConsole
             try
             {
 
-                var ComplexType = await client.Create<SharedInterface.IComplexType>().EchoAsync(new SharedInterface.MyClass() { Name = "Complex", Sum = 11 });
+                var stub = client.Create<SharedProjectValueTask.IValueTask>();
 
-                var stub = client.Create<SharedInterface.IEcho>();
+                //var test = await stub.TallyAsync(1, 3);
+                var seq = await Task.WhenAll(Enumerable.Range(1, 1000)
+                    .Select(x => stub.TallyAsync(x, x + 10).AsTask()
+                    ));
 
-                var perfStub = client.Create<SharedInterface.IPerf>();
-
-                await perfStub.FugaAsync();
-
-                await perfStub.FooAsync("foo", null, new int[0]);
-
-                await perfStub.HogeAsync("hoge", 1, SharedInterface.MyEnum.A);
-
-                await perfStub.VoidTaskAsync();
-
-                //var result = await stub.EchoAsync(123, 10, SharedInterface.MyEnum.C);
-
-                //Console.WriteLine(result.ToString());
-
-                var seq = Enumerable.Range(1, 1000)
-                          .Select(x => stub.EchoAsync("hogehoge", x, 10, SharedInterface.MyEnum.B))
-                          .ToArray();
-
-                var t = await Task.WhenAll(seq);
-
-                foreach (var result in t)
+                foreach (var item in seq)
                 {
-                    Console.WriteLine(result.Sum);
+                    Console.WriteLine(item);
                 }
+
+                //var ComplexType = await client.Create<SharedInterface.IComplexType>().EchoAsync(new SharedInterface.MyClass() { Name = "Complex", Sum = 11 });
+
+                //var stub = client.Create<SharedInterface.IEcho>();
+
+                //var perfStub = client.Create<SharedInterface.IPerf>();
+
+                //await perfStub.FugaAsync();
+
+                //await perfStub.FooAsync("foo", null, new int[0]);
+
+                //await perfStub.HogeAsync("hoge", 1, SharedInterface.MyEnum.A);
+
+                //await perfStub.VoidTaskAsync();
+
+                ////var result = await stub.EchoAsync(123, 10, SharedInterface.MyEnum.C);
+
+                ////Console.WriteLine(result.ToString());
+
+                //var seq = Enumerable.Range(1, 1000)
+                //          .Select(x => stub.EchoAsync("hogehoge", x, 10, SharedInterface.MyEnum.B))
+                //          .ToArray();
+
+                //var t = await Task.WhenAll(seq);
+
+                //foreach (var result in t)
+                //{
+                //    Console.WriteLine(result.Sum);
+                //}
             }
             catch (Exception ex)
             {

@@ -22,6 +22,8 @@ namespace NetStitch
 
         public HttpContext HttpContext => httpcontext;
 
+        public IDictionary<object,object> Items => httpcontext.Items;
+
         public Type ClassType => operationController.ClassType;
 
         public Type InterfaceType => operationController.InterfaceType;
@@ -40,6 +42,5 @@ namespace NetStitch
             this.operationController = operationController;
             this.option = option;
         }
-
     }
 }

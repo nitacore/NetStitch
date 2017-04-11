@@ -71,7 +71,7 @@ namespace NetStitch.Tests
     using NetStitch.Tests.Server;
     public class BasicParameterServer : IBasicParameterTest
     {
-        public int BasicParameter(string myString, sbyte mySByte, byte myByte, short myInt16, int myInt32, long myInt64, ushort myUInt16, uint myUInt32, ulong myUInt64, float mySingle, double myDouble, decimal myDecimal, bool myBoolean, DateTime myDateTime, DateTimeOffset myDateTimeOffset, TimeSpan myTimeSpan, char myChar, string[] myStringArray, sbyte[] mySByteArray, byte[] myByteArray, short[] myInt16Array, int[] myInt32Array, long[] myInt64Array, ushort[] myUInt16Array, uint[] myUInt32Array, ulong[] myUInt64Array, float[] mySingleArray, double[] myDoubleArray, decimal[] myDecimalArray, bool[] myBooleanArray, DateTime[] myDateTimeArray, DateTimeOffset[] myDateTimeOffsetArray, TimeSpan[] myTimeSpanArray, char[] myCharArray)
+        public async ValueTask<int> BasicParameterAsync(string myString, sbyte mySByte, byte myByte, short myInt16, int myInt32, long myInt64, ushort myUInt16, uint myUInt32, ulong myUInt64, float mySingle, double myDouble, decimal myDecimal, bool myBoolean, DateTime myDateTime, DateTimeOffset myDateTimeOffset, TimeSpan myTimeSpan, char myChar, string[] myStringArray, sbyte[] mySByteArray, byte[] myByteArray, short[] myInt16Array, int[] myInt32Array, long[] myInt64Array, ushort[] myUInt16Array, uint[] myUInt32Array, ulong[] myUInt64Array, float[] mySingleArray, double[] myDoubleArray, decimal[] myDecimalArray, bool[] myBooleanArray, DateTime[] myDateTimeArray, DateTimeOffset[] myDateTimeOffsetArray, TimeSpan[] myTimeSpanArray, char[] myCharArray)
         {
             Assert.Equal(myString, "myString");
             Assert.Equal(mySByte, sbyte.MaxValue);
@@ -110,7 +110,7 @@ namespace NetStitch.Tests
             return 1;
         }
 
-        public int BasicParameterDefault(string myString = "myString", sbyte mySByte = sbyte.MaxValue, byte myByte = 255, short myInt16 = short.MaxValue, int myInt32 = int.MaxValue, long myInt64 = long.MaxValue, ushort myUInt16 = ushort.MaxValue, uint myUInt32 = uint.MaxValue, ulong myUInt64 = ulong.MaxValue, float mySingle = float.MaxValue, double myDouble = double.MaxValue, decimal myDecimal = decimal.MaxValue, bool myBoolean = true, DateTime myDateTime = default(DateTime), DateTimeOffset myDateTimeOffset = default(DateTimeOffset), TimeSpan myTimeSpan = default(TimeSpan), char myChar = 'c')
+        public async ValueTask<int> BasicParameterDefaultAsync(string myString = "myString", sbyte mySByte = sbyte.MaxValue, byte myByte = 255, short myInt16 = short.MaxValue, int myInt32 = int.MaxValue, long myInt64 = long.MaxValue, ushort myUInt16 = ushort.MaxValue, uint myUInt32 = uint.MaxValue, ulong myUInt64 = ulong.MaxValue, float mySingle = float.MaxValue, double myDouble = double.MaxValue, decimal myDecimal = decimal.MaxValue, bool myBoolean = true, DateTime myDateTime = default(DateTime), DateTimeOffset myDateTimeOffset = default(DateTimeOffset), TimeSpan myTimeSpan = default(TimeSpan), char myChar = 'c')
         {
             Assert.Equal(myString, "myString");
             Assert.Equal(mySByte, sbyte.MaxValue);

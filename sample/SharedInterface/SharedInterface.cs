@@ -11,20 +11,8 @@ namespace SharedInterface
 {
     public interface IComplexType : INetStitchContract
     {
-        [NetStitch.Operation("a885e7c2-4305-4d2c-8428-9936125641a7")]
-#if !___server___
-        Task<
-#endif
-        MyClass
-#if !___server___
-        >
-#endif
-#if !___server___
-        EchoAsync
-#else
-        Echo
-#endif
-        (MyClass myClass
+        [Operation]
+        ValueTask<MyClass> EchoAsync(MyClass myClass
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
@@ -33,8 +21,7 @@ namespace SharedInterface
 
     public interface IAsyncTest : INetStitchContract
     {
-        [NetStitch.Operation("49cace09-8ad4-4ea7-84fc-09c3582a274e")]
-        Task<int> TestAsync(int a, int b
+        ValueTask<int> TestAsync(int a, int b
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
@@ -43,38 +30,12 @@ namespace SharedInterface
 
     public interface IEcho : INetStitchContract
     {
-        [NetStitch.Operation("d1ae3ebb-1743-46d7-acc7-1f4afc0f7592")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        SumAsync
-#else
-        Sum
-#endif
-        (int[] array
+        ValueTask<int> SumAsync(int[] array
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
-        [NetStitch.Operation("22b39868-64d6-4ac5-944e-d30d937c3e18")]
-#if !___server___
-        Task<
-#endif
-        MyClass
-#if !___server___
-        >
-#endif
-#if !___server___
-        EchoAsync
-#else
-        Echo
-#endif
-        (string name, int x, int y, MyEnum e
+        ValueTask<MyClass> EchoAsync(string name, int x, int y, MyEnum e
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
@@ -84,50 +45,24 @@ namespace SharedInterface
 
     public interface IPerf : INetStitchContract
     {
-        [NetStitch.Operation("6afa8955-4f73-4a45-8795-b980763a7182")]
-#if !___server___
-        Task<
-#endif
-        MyClass
-#if !___server___
-        >
-#endif
-#if !___server___
-        FooAsync
-#else
-        Foo
-#endif
-        (string a, int? x, int[] array
+        ValueTask<MyClass> FooAsync(string a, int? x, int[] array
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
 
-        [NetStitch.Operation("eb28bf13-ce0b-41ee-a4dc-28c456687707")]
-        Task<int> HogeAsync(string a, int x, MyEnum e
+        ValueTask<int> HogeAsync(string a, int x, MyEnum e
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
 
-        [NetStitch.Operation("019ec065-10b2-43ed-85a2-57b27aab9762")]
-#if !___server___
-        Task
-#else
-        void
-#endif
-#if !___server___
-        FugaAsync
-#else
-        Fuga
-#endif
-        (
+        Task FugaAsync(
 #if !___server___
         System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
 
-        [NetStitch.Operation("bb1934e2-f82e-41d3-845d-3bface2dae8d")]
         Task VoidTaskAsync(
 #if !___server___
         System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)

@@ -38,12 +38,12 @@ namespace NetStitch.Tests
     using NetStitch.Tests.Server;
     public class EnumParameterServer : IEnumParameterTest
     {
-        public MyEnumFlag EnumFlagParameterTest(MyEnumFlag myEnum)
+        public async ValueTask<MyEnumFlag> EnumFlagParameterTestAsync(MyEnumFlag myEnum)
         {
             return myEnum;
         }
 
-        public MyEnum EnumParameterTest(MyEnum myEnum)
+        public async ValueTask<MyEnum> EnumParameterTestAsync(MyEnum myEnum)
         {
             return myEnum;
         }

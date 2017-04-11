@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using SharedInterface;
 using Microsoft.AspNetCore.Http;
 using NetStitch;
+using SharedProjectValueTask;
 
 namespace NetStitchServerConsole
 {
@@ -51,45 +52,63 @@ namespace NetStitchServerConsole
                 };
             }
         }
-
-        [testFilter()]
-        public class Tally : SharedInterface.IEcho, SharedInterface.IPerf, IComplexType, NetStitch.IOperationContext
+        public class MyClass : SharedProjectValueTask.IValueTask, NetStitch.IOperationContext
         {
-
             public OperationContext Context { get; set; }
 
-            public MyClass Echo(MyClass myClass)
+            public async ValueTask<int> TallyAsync(int a, int b)
             {
-                return myClass;
-            }
+                //Context.Items["s"] = 2;
 
-            public MyClass Foo(string a, int? x, int[] array)
-            {
-                
-                return new MyClass() { };
-            }
+                //await Task.Run(() =>
+                //{
+                //    Context.Items["s"] = 3;
+                //});
 
-            public void Fuga()
-            {
-                Console.WriteLine("fuga");
-            }
+                //var c = (int)(Context.Items["s"]);
 
-            public Task<int> HogeAsync(string a, int x, MyEnum e = MyEnum.B)
-            {
-                return Task.FromResult(1);
-            }
-
-            public int Sum(int[] array) => array.Sum();
-
-            public Task VoidTaskAsync()
-            {
-                return Task.Delay(100);
-            }
-
-            MyClass IEcho.Echo(string name, int x, int y, MyEnum e)
-            {
-                return new MyClass() { Name = name, Sum = (x + y) * (int)e };
+                return a * b;
             }
         }
+
+        //[testFilter()]
+        //public class Tally : NetStitch.IOperationContext
+        //{
+
+        //    public OperationContext Context { get; set; }
+
+        //    public MyClass Echo(MyClass myClass)
+        //    {
+        //        return myClass;
+        //    }
+
+        //    public MyClass Foo(string a, int? x, int[] array)
+        //    {
+                
+        //        return new MyClass() { };
+        //    }
+
+        //    public void Fuga()
+        //    {
+        //        Console.WriteLine("fuga");
+        //    }
+
+        //    public Task<int> HogeAsync(string a, int x, MyEnum e = MyEnum.B)
+        //    {
+        //        return Task.FromResult(1);
+        //    }
+
+        //    public int Sum(int[] array) => array.Sum();
+
+        //    public Task VoidTaskAsync()
+        //    {
+        //        return Task.Delay(100);
+        //    }
+
+        //    MyClass IEcho.Echo(string name, int x, int y, MyEnum e)
+        //    {
+        //        return new MyClass() { Name = name, Sum = (x + y) * (int)e };
+        //    }
+        //}
     }
 }

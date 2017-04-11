@@ -12,9 +12,9 @@ namespace NetStitch.Server
 {
     public class NetStitchServer
     {
-        private readonly IDictionary<string, OperationController> OperationDic = new Dictionary<string, OperationController>();
+        public readonly IDictionary<string, OperationController> OperationDic = new Dictionary<string, OperationController>();
 
-        private readonly NetStitchOption option;
+        public readonly NetStitchOption option;
 
         public NetStitchServer(Assembly[] assemblies, NetStitchOption option)
         {
@@ -59,15 +59,8 @@ namespace NetStitch.Server
             .Select(x => x.targetType.GetTypeInfo().GetRuntimeInterfaceMap(x.interfaceType)) 
             .SelectMany(
             x => x.TargetMethods.Zip(x.InterfaceMethods, (targetMethod, interfaceMethod) => new { targetMethod, interfaceMethod }),
-            //x => x.interfaceType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance),
             (x, methods) =>
             {
-                //var targetMethod = x.targetType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                //.Single(m => IsSameNamesapceAndMethodName(m, methodInfo) &&
-                //m.CallingConvention == methodInfo.CallingConvention &&
-                //m.ReturnType == methodInfo.ReturnType &&
-                //m.GetGenericArguments().SequenceEqual(methodInfo.GetGenericArguments()) &&
-                //m.GetParameters().Select(p => p.ParameterType).SequenceEqual(methodInfo.GetParameters().Select(p => p.ParameterType)));
                 return new
                 {
                     x.TargetType,
@@ -87,26 +80,11 @@ namespace NetStitch.Server
 
         }
 
-        private bool IsSameNamesapceAndMethodName(MethodInfo targetMethod, MethodInfo interfaceMethod)
-        {
-            string name;
-            var targetMethodSplit = targetMethod.Name.Split('.');
-            if (targetMethodSplit.Length > 1)
-            {
-                name = $"{interfaceMethod.DeclaringType.ToString()}.{interfaceMethod.Name}";
-            }
-            else
-            {
-                name = interfaceMethod.Name;
-            }
-            return targetMethod.Name == name;
-        }
-
         public async Task OperationExecuteAsync(HttpContext httpContext)
         {
 
             OperationController @operation;
-            if (!OperationDic.TryGetValue(httpContext.Request.Path.Value.TrimStart('/'), out @operation))
+            if (!OperationDic.TryGetValue(httpContext.Request.Path.Value, out @operation))
             {
                 //Operation Not Found
                 httpContext.Response.StatusCode = HttpStatus.NotFound;

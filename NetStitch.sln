@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.10
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D12CF6B4-6357-4F78-95A6-3AB203C1550D}"
 EndProject
@@ -41,12 +41,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ClientDefin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ServerDefinitions", "tests\NetStitch.Tests.Server\NetStitch.Tests.ServerDefinitions.csproj", "{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTask", "SharedProjectValueTask\SharedProjectValueTask.shproj", "{AF0609D2-FC03-4EC4-8F4F-8E91D7615870}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		sample\SharedInterface\SharedInterface.projitems*{5588456e-0db2-40bd-8c38-e807bfd4d44d}*SharedItemsImports = 4
+		SharedProjectValueTask\SharedProjectValueTask.projitems*{5588456e-0db2-40bd-8c38-e807bfd4d44d}*SharedItemsImports = 4
 		sample\SharedProjectValueTuple\SharedProjectValueTuple.projitems*{5c6338fa-06e1-4da0-bc63-3c9cc786eb3a}*SharedItemsImports = 13
 		tests\NetStitch.Tests.SharedProject\NetStitch.Tests.SharedProject.projitems*{725f2505-1e2a-4dda-a06e-5fe55f7bbe19}*SharedItemsImports = 13
 		sample\SharedInterface\SharedInterface.projitems*{82e7df8d-1444-4e7a-afee-33b31589240e}*SharedItemsImports = 4
+		SharedProjectValueTask\SharedProjectValueTask.projitems*{82e7df8d-1444-4e7a-afee-33b31589240e}*SharedItemsImports = 4
+		SharedProjectValueTask\SharedProjectValueTask.projitems*{af0609d2-fc03-4ec4-8f4f-8e91d7615870}*SharedItemsImports = 13
 		sample\SharedInterface\SharedInterface.projitems*{c380025c-46e3-44ef-8f85-8e737c787453}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -235,5 +240,6 @@ Global
 		{725F2505-1E2A-4DDA-A06E-5FE55F7BBE19} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
 		{A5564E4B-0B5B-4215-969E-B1BEC86547C9} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
+		{AF0609D2-FC03-4EC4-8F4F-8E91D7615870} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 	EndGlobalSection
 EndGlobal

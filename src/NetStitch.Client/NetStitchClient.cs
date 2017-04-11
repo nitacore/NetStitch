@@ -18,8 +18,8 @@ namespace NetStitch
         readonly protected HttpClient client;
         readonly protected IFormatterResolver formatterResolver;
 
-        private readonly IDictionary<RuntimeTypeHandle, object> operationDic =
-            new Dictionary<RuntimeTypeHandle, object>(new RuntimeTypeHandleEqualityComparer());
+        private readonly IDictionary<RuntimeTypeHandle, INetStitchContract> operationDic =
+            new Dictionary<RuntimeTypeHandle, INetStitchContract>(new RuntimeTypeHandleEqualityComparer());
 
         static NetStitchClient()
         {
@@ -51,12 +51,10 @@ namespace NetStitch
             where T : INetStitchContract
         {
             var type = typeof(T);
-
-            //Bad Pattern : High Cost
-            object result;
+            INetStitchContract result;
             if (!operationDic.TryGetValue(type.TypeHandle, out result))
             {
-                result = Activator.CreateInstance(DynamicType<T>.Type, this, formatterResolver);
+                result = (INetStitchContract)Activator.CreateInstance(DynamicType<T>.Type, this, formatterResolver);
                 lock (operationDic)
                 {
                     if (!operationDic.ContainsKey(type.TypeHandle))
@@ -74,7 +72,7 @@ namespace NetStitch
         }
 
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public virtual async Task<T> PostAsync<T>(HttpContent content, string operationID, CancellationToken cancellationToken)
+        public virtual async ValueTask<T> PostAsync<T>(HttpContent content, string operationID, CancellationToken cancellationToken)
         {
             var response = await client.PostAsync(endpoint + "/" + operationID, content, cancellationToken).ConfigureAwait(false);
             var bytes = await response.EnsureSuccessStatusCode().Content.ReadAsByteArrayAsync().ConfigureAwait(false);
@@ -135,10 +133,9 @@ namespace NetStitch
             .Select(x =>
             new
             {
-                ((OperationAttribute)x.GetCustomAttribute(typeof(OperationAttribute)))?.OperationID,
+                OperationID = $"{interfaceType.Name}/{x.Name}",
                 methodInfo = x
             })
-            .Where(x => !string.IsNullOrWhiteSpace(x.OperationID))
             .Select(x => new OperationInfo()
             {
                 InterfaceType = interfaceType,
@@ -171,16 +168,16 @@ namespace NetStitch
             public Type ReturnType;
         }
 
-        static ConstructorInfo constructorMessagePackObjectAttribute = typeof(MessagePackObjectAttribute).GetTypeInfo()
+        readonly static ConstructorInfo constructorMessagePackObjectAttribute = typeof(MessagePackObjectAttribute).GetTypeInfo()
             .DeclaredConstructors.First(x => x.GetParameters().Length > 0);
 
-        static ConstructorInfo constructorMessagePackKeyAttribute = typeof(KeyAttribute).GetTypeInfo()
+        readonly static ConstructorInfo constructorMessagePackKeyAttribute = typeof(KeyAttribute).GetTypeInfo()
             .DeclaredConstructors.First(x => { var p = x.GetParameters(); return p.Length == 1 && p[0].ParameterType == typeof(int); });
 
-        static MethodInfo callMessagePackSerialize = typeof(LZ4MessagePackSerializer).GetRuntimeMethods()
+        readonly static MethodInfo callMessagePackSerialize = typeof(LZ4MessagePackSerializer).GetRuntimeMethods()
             .First(x => x.Name == "Serialize" && x.GetParameters().Length == 2 && x.ReturnType == typeof(byte[]));
 
-        static FieldInfo empty = typeof(ContentHelper).GetTypeInfo().GetDeclaredField(nameof(ContentHelper.Empty));
+        readonly static FieldInfo empty = typeof(ContentHelper).GetTypeInfo().GetDeclaredField(nameof(ContentHelper.Empty));
 
         private static MethodBuilder CreateMethod(OperationInfo info, TypeBuilder thisType, FieldBuilder clientField, FieldBuilder resolverField)
         {
@@ -226,7 +223,7 @@ namespace NetStitch
             il.Emit(OpCodes.Call, typeof(ContentHelper).GetRuntimeMethod(nameof(ContentHelper.CreateHttpContent), new[] { typeof(byte[]) }));
 
             //operationID
-            il.Emit(OpCodes.Ldstr, info.OperationID);
+            il.Emit(OpCodes.Ldstr, $"{info.InterfaceType.Name}/{info.MethodInfo.Name}");
 
             //cancellationToken
             il.Emit(OpCodes.Ldarg_S, info.FullParameters.Length);

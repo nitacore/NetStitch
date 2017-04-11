@@ -1,14 +1,14 @@
-﻿using System;
+﻿using NetStitch;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using NetStitch;
 
-namespace SharedProjectValueTuple
+namespace SharedProjectValueTask
 {
-    public interface ISharedInterfaceValueTuple : INetStitchContract
+    public interface IValueTask : INetStitchContract
     {
-        ValueTask<(int sum, int count)> TallyAsync(IList<(int a, int b)> tes
+        ValueTask<int> TallyAsync(int a, int b
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif

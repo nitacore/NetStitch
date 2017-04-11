@@ -11,19 +11,7 @@ namespace NetStitch.Tests.Server
 {
     public interface IBasicParameterTest : INetStitchContract
     {
-        [NetStitch.Operation("13deab52-5657-48ed-b3c5-f0cae399b789")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        BasicParameterAsync
-#else
-        BasicParameter
-#endif
+        ValueTask<int> BasicParameterAsync
         (
             String myString,
             SByte mySByte,
@@ -64,20 +52,8 @@ namespace NetStitch.Tests.Server
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
                     );
-        [NetStitch.Operation("ff427e48-e48e-4ce3-8a9c-180002671cc4")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        BasicParameterDefaultAsync
-#else
-        BasicParameterDefault
-#endif
-        (
+
+        ValueTask<int> BasicParameterDefaultAsync(
             String myString = "myString",
             SByte mySByte = SByte.MaxValue,
             Byte myByte = Byte.MaxValue,
@@ -95,7 +71,6 @@ namespace NetStitch.Tests.Server
             DateTimeOffset myDateTimeOffset = default(DateTimeOffset),
             TimeSpan myTimeSpan = default(TimeSpan),
             Char myChar = 'c'
-
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif

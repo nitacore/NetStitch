@@ -31,11 +31,15 @@ namespace NetStitchASP
 
     public class PerfTest : IEcho
     {
-        public int Sum(int[] array) => array.Sum();
-
-        MyClass IEcho.Echo(string name, int x, int y, MyEnum e)
+        public async ValueTask<MyClass> EchoAsync(string name, int x, int y, MyEnum e)
         {
             return new MyClass { Name = name, Sum = (x + y) * (int)e };
         }
+
+        public async ValueTask<int> SumAsync(int[] array)
+        {
+            return array.Sum();
+        }
+
     }
 }

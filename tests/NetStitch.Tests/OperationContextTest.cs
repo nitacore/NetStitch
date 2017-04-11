@@ -42,11 +42,11 @@ namespace NetStitch.Tests
     {
         public OperationContext Context { get; set; }
 
-        public string HttpContextTest(string myString)
+        public async ValueTask<string> HttpContextTestAsync(string myString)
         {
-            Context.HttpContext.Items.Add("a", myString);
+            Context.Items.Add("a", myString);
 
-            return Context.HttpContext.Items["a"].ToString();
+            return Context.Items["a"].ToString();
         }
     }
 }
