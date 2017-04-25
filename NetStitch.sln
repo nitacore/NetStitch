@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.10
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D12CF6B4-6357-4F78-95A6-3AB203C1550D}"
 EndProject
@@ -40,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ClientDefinitions", "tests\NetStitch.Tests.Client\NetStitch.Tests.ClientDefinitions.csproj", "{A5564E4B-0B5B-4215-969E-B1BEC86547C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ServerDefinitions", "tests\NetStitch.Tests.Server\NetStitch.Tests.ServerDefinitions.csproj", "{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Client.Net45", "src\NetStitch.Client.Net45\NetStitch.Client.Net45.csproj", "{3D963B29-7DFA-491B-BA00-AAD5764794A2}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -214,6 +216,18 @@ Global
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}.Release|x64.Build.0 = Release|Any CPU
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}.Release|x86.ActiveCfg = Release|Any CPU
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}.Release|x86.Build.0 = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x64.Build.0 = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x64.ActiveCfg = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x64.Build.0 = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -235,5 +249,6 @@ Global
 		{725F2505-1E2A-4DDA-A06E-5FE55F7BBE19} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
 		{A5564E4B-0B5B-4215-969E-B1BEC86547C9} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2} = {D12CF6B4-6357-4F78-95A6-3AB203C1550D}
 	EndGlobalSection
 EndGlobal

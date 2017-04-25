@@ -13,7 +13,7 @@
     <OutputType>library</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="1.0.3" />
+    <PackageReference Include="MessagePack" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetStitch.Common\NetStitch.Common.csproj" />

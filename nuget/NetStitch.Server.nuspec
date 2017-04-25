@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>NetStitch.Server</id>
-        <version>0.1.4</version>
+        <version>0.1.5</version>
         <title>NetStitch.Server</title>
         <authors>nitacore</authors>
         <owners>nitacore</owners>
@@ -13,23 +13,16 @@
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <tags>ASPNETCore RPC</tags>
         <dependencies>
-            <group targetFramework=".NETFramework4.5.1">
+            <group targetFramework=".NETStandard1.4">
                 <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="1.0.0" />
                 <dependency id="Microsoft.AspNetCore.Http.Features" version="1.0.0" />
-                <dependency id="MessagePack" version="1.0.3" />
-            </group>
-            <group targetFramework=".NETStandard1.5">
-                <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="1.0.0" />
-                <dependency id="Microsoft.AspNetCore.Http.Features" version="1.0.0" />
-                <dependency id="MessagePack" version="1.0.3" />
+                <dependency id="MessagePack" version="1.2.0" />
             </group>
         </dependencies>
     </metadata>
     <files>
-        <file src="..\src\NetStitch.Server.Net451\bin\Release\NetStitch.Common.dll" target="lib\net4.5.1" />
-        <file src="..\src\NetStitch.Server.Net451\bin\Release\NetStitch.Server.dll" target="lib\net4.5.1" />
-        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.5\NetStitch.Common.dll" target="lib\netstandard1.5" />
-        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.5\NetStitch.Server.dll" target="lib\netstandard1.5" />
+        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.4\NetStitch.Common.dll" target="lib\netstandard1.4" />
+        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.4\NetStitch.Server.dll" target="lib\netstandard1.4" />
         <file src="NetStitch.Server.targets" target="build" />
     </files>
 </package>
