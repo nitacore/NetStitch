@@ -65,7 +65,7 @@ namespace NetStitch.Tests
     using NetStitch.Tests.Server;
     public class NullableParameterServer : INullableParameterTest
     {
-        public int NullableParameterTest1(string myString, sbyte? mySByte, byte? myByte, short? myInt16, int? myInt32, long? myInt64, ushort? myUInt16, uint? myUInt32, ulong? myUInt64, float? mySingle, double? myDouble, decimal? myDecimal, bool? myBoolean, DateTime? myDateTime, DateTimeOffset? myDateTimeOffset, TimeSpan? myTimeSpan, char? myChar)
+        public async ValueTask<int> NullableParameterTest1Async(string myString, sbyte? mySByte, byte? myByte, short? myInt16, int? myInt32, long? myInt64, ushort? myUInt16, uint? myUInt32, ulong? myUInt64, float? mySingle, double? myDouble, decimal? myDecimal, bool? myBoolean, DateTime? myDateTime, DateTimeOffset? myDateTimeOffset, TimeSpan? myTimeSpan, char? myChar)
         {
             Assert.Equal(myString, "myString");
             Assert.Equal(mySByte, sbyte.MaxValue);
@@ -86,7 +86,7 @@ namespace NetStitch.Tests
             Assert.Equal(myChar, 'c');
             return 0;
         }
-        public int NullableParameterTest2(string myString, sbyte? mySByte, byte? myByte, short? myInt16, int? myInt32, long? myInt64, ushort? myUInt16, uint? myUInt32, ulong? myUInt64, float? mySingle, double? myDouble, decimal? myDecimal, bool? myBoolean, DateTime? myDateTime, DateTimeOffset? myDateTimeOffset, TimeSpan? myTimeSpan, char? myChar)
+        public async ValueTask<int> NullableParameterTest2Async(string myString, sbyte? mySByte, byte? myByte, short? myInt16, int? myInt32, long? myInt64, ushort? myUInt16, uint? myUInt32, ulong? myUInt64, float? mySingle, double? myDouble, decimal? myDecimal, bool? myBoolean, DateTime? myDateTime, DateTimeOffset? myDateTimeOffset, TimeSpan? myTimeSpan, char? myChar)
         {
             Assert.Null(myString);
             Assert.Null(mySByte);
@@ -107,7 +107,7 @@ namespace NetStitch.Tests
             Assert.Null(myChar);
             return 0;
         }
-        public int NullableParameterTest3(string myString = "myString", sbyte? mySByte = sbyte.MaxValue, byte? myByte = 255, short? myInt16 = short.MaxValue, int? myInt32 = int.MaxValue, long? myInt64 = long.MaxValue, ushort? myUInt16 = ushort.MaxValue, uint? myUInt32 = uint.MaxValue, ulong? myUInt64 = ulong.MaxValue, float? mySingle = float.MaxValue, double? myDouble = double.MaxValue, decimal? myDecimal = decimal.MaxValue, bool? myBoolean = true, DateTime? myDateTime = default(DateTime?), DateTimeOffset? myDateTimeOffset = default(DateTimeOffset?), TimeSpan? myTimeSpan = default(TimeSpan?), char? myChar = 'c')
+        public async ValueTask<int> NullableParameterTest3Async(string myString = "myString", sbyte? mySByte = sbyte.MaxValue, byte? myByte = 255, short? myInt16 = short.MaxValue, int? myInt32 = int.MaxValue, long? myInt64 = long.MaxValue, ushort? myUInt16 = ushort.MaxValue, uint? myUInt32 = uint.MaxValue, ulong? myUInt64 = ulong.MaxValue, float? mySingle = float.MaxValue, double? myDouble = double.MaxValue, decimal? myDecimal = decimal.MaxValue, bool? myBoolean = true, DateTime? myDateTime = default(DateTime?), DateTimeOffset? myDateTimeOffset = default(DateTimeOffset?), TimeSpan? myTimeSpan = default(TimeSpan?), char? myChar = 'c')
         {
             Assert.Equal(myString, "myString");
             Assert.Equal(mySByte, sbyte.MaxValue);

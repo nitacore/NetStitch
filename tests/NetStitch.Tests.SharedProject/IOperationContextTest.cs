@@ -11,25 +11,12 @@ namespace NetStitch.Tests.Server
 {
     public interface IOperationContextTest : INetStitchContract
     {
-        [NetStitch.Operation("dfe985ad-aa84-4497-b324-608ea025d5da")]
-#if !___server___
-        Task<
-#endif
-        string
-#if !___server___
-        >
-#endif
-#if !___server___
-        HttpContextTestAsync
-#else
-        HttpContextTest
-#endif
-        (
-            string myString
-
+        [NetStitch.Operation]
+        ValueTask<string> HttpContextTestAsync
+        (string myString
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-                    );
+        );
     }
 }

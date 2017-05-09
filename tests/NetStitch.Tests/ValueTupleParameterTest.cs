@@ -37,7 +37,7 @@ namespace NetStitch.Tests
     public class ValueTupleParameterServer : IValueTupleParameterTest
     {
 
-        public (int a, (int b, int c) d) ValueTupleParameterTest((int a, (int b, int c) d) valuetuple)
+        public async ValueTask<(int a, (int b, int c) d)> ValueTupleParameterTestAsync((int a, (int b, int c) d) valuetuple)
         {
             Assert.Equal(valuetuple.a, 1);
             Assert.Equal(valuetuple.d.b, 2);
@@ -45,7 +45,7 @@ namespace NetStitch.Tests
             return valuetuple;
         }
 
-        public (int a, int b) ValueTupleParameterTest2((int a, int b) valuetuple)
+        public async ValueTask<(int a, int b)> ValueTupleParameterTest2Async((int a, int b) valuetuple)
         {
             Assert.Equal(valuetuple.a, 4);
             Assert.Equal(valuetuple.b, 5);

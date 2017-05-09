@@ -11,19 +11,8 @@ namespace NetStitch.Tests.Server
 {
     public interface INullableParameterTest : INetStitchContract
     {
-        [NetStitch.Operation("d4b50183-240f-4b02-bb15-417ca5ccb74e")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        NullableParameterTest1Async
-#else
-        NullableParameterTest1
-#endif
+        [NetStitch.Operation]
+        ValueTask<int> NullableParameterTest1Async
         (
             String myString,
             SByte? mySByte,
@@ -42,24 +31,12 @@ namespace NetStitch.Tests.Server
             DateTimeOffset? myDateTimeOffset,
             TimeSpan? myTimeSpan,
             Char? myChar
-
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-                    );
-        [NetStitch.Operation("0fd8c7f1-94b3-43e3-9d10-88160fcd17c3")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        NullableParameterTest2Async
-#else
-        NullableParameterTest2
-#endif
+        );
+        [NetStitch.Operation]
+        ValueTask<int> NullableParameterTest2Async
         (
             String myString,
             SByte? mySByte,
@@ -78,24 +55,12 @@ namespace NetStitch.Tests.Server
             DateTimeOffset? myDateTimeOffset,
             TimeSpan? myTimeSpan,
             Char? myChar
-
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-                    );
-        [NetStitch.Operation("1e88e4ba-74c0-4f33-9d7b-20fff3072ee2")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        NullableParameterTest3Async
-#else
-        NullableParameterTest3
-#endif
+                );
+        [NetStitch.Operation]
+        ValueTask<int> NullableParameterTest3Async
         (
             String myString = "myString",
             SByte? mySByte = SByte.MaxValue,
@@ -114,10 +79,9 @@ namespace NetStitch.Tests.Server
             DateTimeOffset? myDateTimeOffset = default(DateTimeOffset?),
             TimeSpan? myTimeSpan = default(TimeSpan?),
             Char? myChar = 'c'
-
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-                    );
+                            );
     }
 }

@@ -30,20 +30,26 @@ class Program
         }
     }
 
-    public class Tally : IEcho, IAsyncTest, IOperationContext, ISharedInterfaceValueTuple
+    public class Tally : IEcho, IAsyncTest, IOperationContext,ISharedInterfaceValueTuple
     {
         public OperationContext Context { get; set; }
 
-        public async Task<int> TestAsync(int a, int b)
+        public ValueTask<MyClass> EchoAsync(string name, int x, int y, MyEnum e)
         {
-            return await Task.FromResult(a + b);
+            throw new NotImplementedException();
         }
 
-        MyClass IEcho.Echo(string name, int x, int y, MyEnum e) => new MyClass() { Name = name, Sum = (x + y) * (int)e };
+        public ValueTask<int> SumAsync(int[] array)
+        {
+            throw new NotImplementedException();
+        }
 
-        int IEcho.Sum(int[] array) => array.Sum();
+        public ValueTask<int> TestAsync(int a, int b)
+        {
+            throw new NotImplementedException();
+        }
 
-        (int sum, int count) ISharedInterfaceValueTuple.Tally(System.Collections.Generic.IList<(int a, int b)> tes)
+        async ValueTask<(int sum, int count)> ISharedInterfaceValueTuple.TallyAsync(System.Collections.Generic.IList<(int a, int b)> tes)
         {
             return (tes.Sum(x => x.a + x.b), tes.Count);
         }

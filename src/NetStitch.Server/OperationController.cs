@@ -28,12 +28,8 @@ namespace NetStitch.Server
         public readonly Type ParameterType;
         public readonly IFormatterResolver FormatterResolver;
         
-        private readonly Action<OperationContext> action;
-        private readonly Func<OperationContext, byte[]> function;
         internal readonly Func<OperationContext, Task> OperationAsync;
         internal readonly NetStitchFilterAttribute[] filters;
-
-        //private readonly InnerMiddlewareAttribute[] innerMiddlewares;
 
         private Type CreateParameterSturctType(Type interfaceType, MethodInfo methodInfo)
         {
@@ -90,11 +86,6 @@ namespace NetStitch.Server
                         x.GetParameters().Any(p => p.ParameterType == typeof(System.IO.Stream) &&
                         x.GetParameters().Length == 2));
 
-        readonly static MethodInfo callSerializer = typeof(LZ4MessagePackSerializer).GetMethods()
-            .First(x => x.Name == (nameof(LZ4MessagePackSerializer.Serialize)) &&
-                        x.IsGenericMethod &&
-                        x.GetParameters().Length == 2);
-
         readonly static Expression httpRequestBody =
             Expression.Property(
                 Expression.Property(
@@ -115,11 +106,11 @@ namespace NetStitch.Server
                                  parameterInfos.Length == 1 ? parameterInfos[0].ParameterType :
                                  CreateParameterSturctType(interfaceType, targetMethodInfo);
 
-            this.OperationID = ((OperationAttribute)interfaceMethodInfo.GetCustomAttribute(typeof(OperationAttribute))).OperationID;
+            this.OperationID = $"/{InterfaceType.Name}/{MethodInfo.Name}";
 
             bool requiresOperationContext = targetType.GetInterfaces().Any(x => x == typeof(IOperationContext));
 
-            bool operationIsAsyncType = typeof(Task).IsAssignableFrom(targetMethodInfo.ReturnType);
+            bool operationIsAsyncType = typeof(ValueTask<>).IsAssignableFrom(targetMethodInfo.ReturnType);
 
             bool operationIsAsyncFunction = operationIsAsyncType && targetMethodInfo.ReturnType.GenericTypeArguments.Length != 0;
 
@@ -165,40 +156,13 @@ namespace NetStitch.Server
 
             // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
             // AsyncExecute(new Class().Method(obj.field1, obj.field2, ...))
-            if (operationIsAsyncType)
-            {
-                var asyncExecuteMethodInfo = operationIsAsyncFunction ?
-                    typeof(OperationController).GetMethod(nameof(OperationController.AsyncFunction)).MakeGenericMethod(asyncRetunType) :
-                    typeof(OperationController).GetMethod(nameof(OperationController.AsyncAction));
+            var asyncExecuteMethodInfo = asyncRetunType != null ?
+                typeof(OperationController).GetMethod(nameof(OperationController.AsyncFunction)).MakeGenericMethod(asyncRetunType) :
+                typeof(OperationController).GetMethod(nameof(OperationController.AsyncAction));
 
-                var taskExecute = Expression.Call(null, asyncExecuteMethodInfo, operationContext, callOperation);
-                var lambda = Expression.Lambda<Func<OperationContext, Task>>(taskExecute, operationContext);
-                OperationAsync = lambda.Compile();
-            }
-            else
-            {
-                // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
-                // new Class().Method(obj.field1, obj.field2, ...)
-                if (targetMethodInfo.ReturnType == typeof(void))
-                {
-                    var lambda = Expression.Lambda<Action<OperationContext>>(callOperation, operationContext);
-                    this.action = lambda.Compile();
-                    this.OperationAsync = (Func<OperationContext, Task>)this.GetType().GetMethod("Action").CreateDelegate(typeof(Func<OperationContext, Task>), this);
-                }
-                else
-                {
-
-                    MethodInfo serializeMethod = callSerializer.MakeGenericMethod(new Type[] { this.MethodInfo.ReturnType });
-
-                    // ParameterStructType obj = LZ4MessagePackSerializer.Deserialize<ParameterStructType>(HttpContext.Request.Body, FormatterResolver);
-                    // LZ4MessagePackSerializer.Serialize<TReturnType>(new Class().Method(obj.field1, obj.field2, ...))
-                    var excecute = Expression.Call(null, serializeMethod, callOperation, resolverProperty);
-                    var lambda = Expression.Lambda<Func<OperationContext, byte[]>>(excecute, operationContext);
-                    this.function = lambda.Compile();
-                    this.OperationAsync = (Func<OperationContext, Task>)this.GetType().GetMethod("Function").CreateDelegate(typeof(Func<OperationContext, Task>), this);
-
-                }
-            }
+            var taskExecute = Expression.Call(null, asyncExecuteMethodInfo, operationContext, callOperation);
+            var lambda = Expression.Lambda<Func<OperationContext, Task>>(taskExecute, operationContext);
+            this.OperationAsync = lambda.Compile();
 
             this.filters = option.GlobalFilters
                 .Concat(targetType.GetTypeInfo().GetCustomAttributes<NetStitchFilterAttribute>(true))
@@ -231,29 +195,13 @@ namespace NetStitch.Server
             operationContext.HttpContext.Response.StatusCode = HttpStatus.NoContent;
         }
 
-        public static async Task AsyncFunction<TReturnType>(OperationContext operationContext, Task<TReturnType> task)
+        public static async Task AsyncFunction<T>(OperationContext operationContext, ValueTask<T> task)
         {
-            TReturnType result = await task.ConfigureAwait(false);
+            T result = await task.ConfigureAwait(false);
             HttpResponse responce = operationContext.HttpContext.Response;
             responce.ContentType = "application/octet-stream";
             responce.StatusCode = HttpStatus.OK;
-            LZ4MessagePackSerializer.Serialize<TReturnType>(responce.Body, result, operationContext.FormatterResolver);
-        }
-
-        public async Task Action(OperationContext Context)
-        {
-            action(Context);
-            Context.HttpContext.Response.StatusCode = HttpStatus.NoContent;
-            await Task.CompletedTask.ConfigureAwait(false);
-        }
-
-        public async Task Function(OperationContext Context)
-        {
-            byte[] result = function(Context);
-            HttpResponse responce = Context.HttpContext.Response;
-            responce.ContentType = "application/octet-stream";
-            responce.StatusCode = HttpStatus.OK;
-            await responce.Body.WriteAsync(result, 0, result.Length);
+            LZ4MessagePackSerializer.Serialize<T>(responce.Body, result, operationContext.FormatterResolver);
         }
     }
 }
