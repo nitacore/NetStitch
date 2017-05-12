@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>NetStitch.Client</id>
-        <version>0.1.5</version>
+        <version>0.1.7</version>
         <title>NetStitch.Client</title>
         <authors>nitacore</authors>
         <owners>nitacore</owners>
@@ -16,7 +16,7 @@
             <group targetFramework=".NETFramework4.5">
                 <dependency id="MessagePack" version="1.2.0" />
             </group>
-            <group targetFramework=".NETStandard1.5">
+            <group targetFramework=".NETStandard1.4">
                 <dependency id="MessagePack" version="1.2.0" />
             </group>
         </dependencies>
