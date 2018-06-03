@@ -1,4 +1,5 @@
 ﻿using NetStitch;
+using SharedInterface;
 using System;
 using System.Collections.Generic;
 using System.Text;

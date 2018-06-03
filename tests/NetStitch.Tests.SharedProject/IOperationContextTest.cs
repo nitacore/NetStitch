@@ -11,7 +11,6 @@ namespace NetStitch.Tests.Server
 {
     public interface IOperationContextTest : INetStitchContract
     {
-        [NetStitch.Operation]
         ValueTask<string> HttpContextTestAsync
         (string myString
 #if !___server___

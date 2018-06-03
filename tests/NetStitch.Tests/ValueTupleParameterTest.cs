@@ -39,16 +39,16 @@ namespace NetStitch.Tests
 
         public async ValueTask<(int a, (int b, int c) d)> ValueTupleParameterTestAsync((int a, (int b, int c) d) valuetuple)
         {
-            Assert.Equal(valuetuple.a, 1);
-            Assert.Equal(valuetuple.d.b, 2);
-            Assert.Equal(valuetuple.d.c, 3);
+            Assert.Equal(1, valuetuple.a);
+            Assert.Equal(2, valuetuple.d.b);
+            Assert.Equal(3, valuetuple.d.c);
             return valuetuple;
         }
 
         public async ValueTask<(int a, int b)> ValueTupleParameterTest2Async((int a, int b) valuetuple)
         {
-            Assert.Equal(valuetuple.a, 4);
-            Assert.Equal(valuetuple.b, 5);
+            Assert.Equal(4, valuetuple.a);
+            Assert.Equal(5, valuetuple.b);
             return valuetuple;
         }
 

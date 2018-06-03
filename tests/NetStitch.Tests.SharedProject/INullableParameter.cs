@@ -11,7 +11,6 @@ namespace NetStitch.Tests.Server
 {
     public interface INullableParameterTest : INetStitchContract
     {
-        [NetStitch.Operation]
         ValueTask<int> NullableParameterTest1Async
         (
             String myString,
@@ -31,11 +30,12 @@ namespace NetStitch.Tests.Server
             DateTimeOffset? myDateTimeOffset,
             TimeSpan? myTimeSpan,
             Char? myChar
+
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-        );
-        [NetStitch.Operation]
+                    );
+
         ValueTask<int> NullableParameterTest2Async
         (
             String myString,
@@ -55,11 +55,12 @@ namespace NetStitch.Tests.Server
             DateTimeOffset? myDateTimeOffset,
             TimeSpan? myTimeSpan,
             Char? myChar
+
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-                );
-        [NetStitch.Operation]
+        );
+
         ValueTask<int> NullableParameterTest3Async
         (
             String myString = "myString",
@@ -79,9 +80,10 @@ namespace NetStitch.Tests.Server
             DateTimeOffset? myDateTimeOffset = default(DateTimeOffset?),
             TimeSpan? myTimeSpan = default(TimeSpan?),
             Char? myChar = 'c'
+
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-                            );
+                    );
     }
 }

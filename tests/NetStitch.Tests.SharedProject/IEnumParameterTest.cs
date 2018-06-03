@@ -11,14 +11,13 @@ namespace NetStitch.Tests.Server
 {
     public interface IEnumParameterTest : INetStitchContract
     {
-        [NetStitch.Operation]
         ValueTask<MyEnum> EnumParameterTestAsync
         ( MyEnum myEnum
+
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-        );
-        [NetStitch.Operation]
+                    );
         ValueTask<MyEnumFlag> EnumFlagParameterTestAsync
         ( MyEnumFlag myEnum
 #if !___server___

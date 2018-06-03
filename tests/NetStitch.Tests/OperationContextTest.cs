@@ -29,7 +29,7 @@ namespace NetStitch.Tests
         {
             var stub = server.CreateStub<IOperationContextTest>();
             var result = await stub.HttpContextTestAsync("test");
-            Assert.Equal(result, "test");
+            Assert.Equal("test", result);
         }
     }
 }

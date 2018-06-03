@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>NetStitch.Server</id>
-        <version>0.1.7</version>
+        <version>0.1.5</version>
         <title>NetStitch.Server</title>
         <authors>nitacore</authors>
         <owners>nitacore</owners>
@@ -12,15 +12,28 @@
         <language>en-US</language>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <tags>ASPNETCore RPC</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.6" />
+            <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.6" />
+        </frameworkAssemblies>
         <dependencies>
+            <group targetFramework=".NETFramework4.6">
+                <dependency id="System.Reflection.TypeExtensions" version="4.3.0" />
+                <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="1.1.1" />
+                <dependency id="Microsoft.AspNetCore.Http.Features" version="1.1.1" />
+                <dependency id="MessagePack" version="1.0.3" />
+            </group>
             <group targetFramework=".NETStandard1.4">
-                <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="1.0.0" />
-                <dependency id="Microsoft.AspNetCore.Http.Features" version="1.0.0" />
-                <dependency id="MessagePack" version="1.2.0" />
+                <dependency id="System.Reflection.TypeExtensions" version="4.3.0" />
+                <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="1.1.1" />
+                <dependency id="Microsoft.AspNetCore.Http.Features" version="1.1.1" />
+                <dependency id="MessagePack" version="1.0.3" />
             </group>
         </dependencies>
     </metadata>
     <files>
+        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.4\NetStitch.Common.dll" target="lib\net46" />
+        <file src="..\src\NetStitch.Server\bin\Release\netstandard1.4\NetStitch.Server.dll" target="lib\net46" />
         <file src="..\src\NetStitch.Server\bin\Release\netstandard1.4\NetStitch.Common.dll" target="lib\netstandard1.4" />
         <file src="..\src\NetStitch.Server\bin\Release\netstandard1.4\NetStitch.Server.dll" target="lib\netstandard1.4" />
         <file src="NetStitch.Server.targets" target="build" />
