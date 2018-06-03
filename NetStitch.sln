@@ -35,13 +35,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitchClientConsole", "s
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NetStitch.Tests.SharedProject", "tests\NetStitch.Tests.SharedProject\NetStitch.Tests.SharedProject.shproj", "{725F2505-1E2A-4DDA-A06E-5FE55F7BBE19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ClientDefinitions", "tests\NetStitch.Tests.Client\NetStitch.Tests.ClientDefinitions.csproj", "{A5564E4B-0B5B-4215-969E-B1BEC86547C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitch.Tests.ClientDefinitions", "tests\NetStitch.Tests.Client\NetStitch.Tests.ClientDefinitions.csproj", "{A5564E4B-0B5B-4215-969E-B1BEC86547C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ServerDefinitions", "tests\NetStitch.Tests.Server\NetStitch.Tests.ServerDefinitions.csproj", "{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitch.Tests.ServerDefinitions", "tests\NetStitch.Tests.Server\NetStitch.Tests.ServerDefinitions.csproj", "{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTask", "sample\SharedProjectValueTask\SharedProjectValueTask.shproj", "{AF0609D2-FC03-4EC4-8F4F-8E91D7615870}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Swagger", "src\NetStitch.Swagger\NetStitch.Swagger.csproj", "{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitch.Swagger", "src\NetStitch.Swagger\NetStitch.Swagger.csproj", "{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Client.Net45", "src\NetStitch.Client.Net45\NetStitch.Client.Net45.csproj", "{3D963B29-7DFA-491B-BA00-AAD5764794A2}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -217,6 +219,18 @@ Global
 		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|x64.Build.0 = Release|Any CPU
 		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|x86.ActiveCfg = Release|Any CPU
 		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|x86.Build.0 = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x64.Build.0 = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x64.ActiveCfg = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x64.Build.0 = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -239,5 +253,9 @@ Global
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
 		{AF0609D2-FC03-4EC4-8F4F-8E91D7615870} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8} = {D12CF6B4-6357-4F78-95A6-3AB203C1550D}
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2} = {D12CF6B4-6357-4F78-95A6-3AB203C1550D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2148455C-F05A-4CEC-A4F1-B73523FA5D46}
 	EndGlobalSection
 EndGlobal
