@@ -26,33 +26,44 @@ class Program
     {
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseNetStitch(this.GetType());
+            app.UseMiddleware<NetStitch.Swagger.NetStitchSwaggerMiddleware>();
+            app.UseNetStitch(this.GetType(), new NetStitchOption()
+            {
+                ExceptionHandling = ExceptionHandling.ShowStackTrace,
+                Logger = new NetStitch.Logger.NetStitchConsoleLogger(),
+                FormatterResolver = MessagePack.Resolvers.StandardResolver.Instance,
+            });
         }
     }
 
-    public class Tally : IEcho, IAsyncTest, IOperationContext,ISharedInterfaceValueTuple
+    public class Tally :  IOperationContext, SharedInterface.IAsyncTest
     {
         public OperationContext Context { get; set; }
 
-        public ValueTask<MyClass> EchoAsync(string name, int x, int y, MyEnum e)
+        public Task OutputLogAsync(string message, string message2, MyEnum e, MyEnum2 e2)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("log");
+            return Task.CompletedTask;
         }
 
-        public ValueTask<int> SumAsync(int[] array)
+        public async ValueTask<MyClass> EchoAsync()
         {
-            throw new NotImplementedException();
+            return new MyClass() { Name = "ABCああああいいいいいうううううええええおおおおおあああああいいいいいうううううえええええおおおおおあああああいいいいいうううううえええええおおおお" , Sum = 123 };
         }
 
-        public ValueTask<int> TestAsync(int a, int b)
+        public async ValueTask<int> SumAsync(int[] array)
         {
-            throw new NotImplementedException();
+            return array.Sum();
         }
 
-        async ValueTask<(int sum, int count)> ISharedInterfaceValueTuple.TallyAsync(System.Collections.Generic.IList<(int a, int b)> tes)
+        public async ValueTask<int> TestAsync(int a, int b, int? c)
         {
-            return (tes.Sum(x => x.a + x.b), tes.Count);
+            return await Task.FromResult(a + b);
         }
 
+        public async ValueTask<int> TestAsync(int a, int b)
+        {
+            return a + b;
+        }
     }
 }

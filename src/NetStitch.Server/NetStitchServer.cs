@@ -12,14 +12,14 @@ namespace NetStitch.Server
 {
     public class NetStitchServer
     {
-        public readonly IDictionary<string, OperationController> OperationDic = new Dictionary<string, OperationController>();
+        public readonly IDictionary<string, OperationController> OperationMap = new Dictionary<string, OperationController>();
 
-        public readonly NetStitchOption option;
+        public readonly NetStitchOption Option;
 
         public NetStitchServer(Assembly[] assemblies, NetStitchOption option)
         {
-            this.option = option;
-            this.option.Logger.ServerSetupStart();
+            this.Option = option;
+            this.Option.Logger.ServerSetupStart();
 
             var tm = System.Diagnostics.Stopwatch.StartNew();
 
@@ -73,10 +73,10 @@ namespace NetStitch.Server
             foreach (var element in seq)
             {
                 var op = new OperationController(element.TargetType, element.InterfaceType, element.targetMethod, element.interfaceMethod, option);
-                OperationDic.Add(op.OperationID, op);
+                OperationMap.Add(op.OperationID, op);
             }
 
-            this.option.Logger.ServerSetupCompleted(tm.Elapsed);
+            this.Option.Logger.ServerSetupCompleted(tm.Elapsed);
 
         }
 
@@ -84,45 +84,51 @@ namespace NetStitch.Server
         {
 
             OperationController @operation;
-            if (!OperationDic.TryGetValue(httpContext.Request.Path.Value, out @operation))
+            if (!OperationMap.TryGetValue(httpContext.Request.Path.Value, out @operation))
             {
                 //Operation Not Found
                 httpContext.Response.StatusCode = HttpStatus.NotFound;
                 return;
             }
 
-            option.Logger.OperationStart(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name);
+            Option.Logger.OperationStart(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name);
+
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            var operationContext = new OperationContext(httpContext, @operation, Option);
 
             try
             {
-
-                var sw = System.Diagnostics.Stopwatch.StartNew();
-
-                var operationContext = new OperationContext(httpContext, @operation, option);
-
                 await @operation.OperationAsync(operationContext).ConfigureAwait(false);
-                
-                option.Logger.OperationCompleted(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name, sw.Elapsed);
-
             }
             catch (Exception ex)
             {
-                option.Logger.OperationError(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name, ex);
+                Option.Logger.OperationError(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name, ex);
 
-                switch (option.ExceptionHandling)
+                byte[] bytes;
+                switch (Option.ExceptionHandling)
                 {
                     case ExceptionHandling.HideMessage:
                         httpContext.Response.StatusCode = HttpStatus.InternalServerError;
                         break;
                     case ExceptionHandling.ShowMessage:
+                        httpContext.Response.StatusCode = HttpStatus.InternalServerError;
+                        httpContext.Response.ContentType = "text/plain";
+                        bytes = new UTF8Encoding(false).GetBytes(ex.Message);
+                        httpContext.Response.Body.Write(bytes, 0, bytes.Length);
+                        break;
+                    case ExceptionHandling.ShowStackTrace:
                     default:
                         httpContext.Response.StatusCode = HttpStatus.InternalServerError;
-                        httpContext.Request.ContentType = "text/plain";
-                        var bytes = new UTF8Encoding(false).GetBytes(ex.Message);
+                        httpContext.Response.ContentType = "text/plain";
+                        bytes = new UTF8Encoding(false).GetBytes(ex.ToString());
                         httpContext.Response.Body.Write(bytes, 0, bytes.Length);
                         break;
                 }
             }
+
+            Option.Logger.OperationCompleted(@operation.InterfaceType.Name, @operation.ClassType.Name, @operation.MethodInfo.Name, sw.Elapsed);
+
         }
     }
 }

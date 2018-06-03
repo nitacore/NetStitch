@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection.Emit;
 using NetStitch.Option;
 using NetStitch.Logger;
+using System.Collections.Concurrent;
 
 namespace NetStitch.Server
 {
@@ -17,7 +18,10 @@ namespace NetStitch.Server
     {
         static NetStitchMiddleware()
         {
+            Servers = new ConcurrentDictionary<string, NetStitchServer>();
         }
+
+        public static readonly ConcurrentDictionary<string, NetStitchServer> Servers;
 
         readonly NetStitchServer server;
 
@@ -30,10 +34,14 @@ namespace NetStitch.Server
         public NetStitchMiddleware(RequestDelegate next, Assembly[] assemblies, NetStitchOption option)
         {
             server = new NetStitchServer(assemblies, option);
+            if (!Servers.TryAdd(option.ServerID, server))
+            {
+                throw new InvalidOperationException($"Duplicate Server ID : {option.ServerID}");
+            }
         }
-        public async Task Invoke(HttpContext httpContext)
+        public Task Invoke(HttpContext httpContext)
         {
-            await server.OperationExecuteAsync(httpContext).ConfigureAwait(false);
+            return server.OperationExecuteAsync(httpContext);
         }
     }
 }

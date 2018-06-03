@@ -31,24 +31,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitchClientConsole.NetC
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTuple", "sample\SharedProjectValueTuple\SharedProjectValueTuple.shproj", "{5C6338FA-06E1-4DA0-BC63-3C9CC786EB3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitchServerConsole", "sample\NetStitchServerConsole\NetStitchServerConsole.csproj", "{5588456E-0DB2-40BD-8C38-E807BFD4D44D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitchClientConsole", "sample\NetStitchClientConsole\NetStitchClientConsole.csproj", "{82E7DF8D-1444-4E7A-AFEE-33B31589240E}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NetStitch.Tests.SharedProject", "tests\NetStitch.Tests.SharedProject\NetStitch.Tests.SharedProject.shproj", "{725F2505-1E2A-4DDA-A06E-5FE55F7BBE19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ClientDefinitions", "tests\NetStitch.Tests.Client\NetStitch.Tests.ClientDefinitions.csproj", "{A5564E4B-0B5B-4215-969E-B1BEC86547C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitch.Tests.ClientDefinitions", "tests\NetStitch.Tests.Client\NetStitch.Tests.ClientDefinitions.csproj", "{A5564E4B-0B5B-4215-969E-B1BEC86547C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Tests.ServerDefinitions", "tests\NetStitch.Tests.Server\NetStitch.Tests.ServerDefinitions.csproj", "{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Client.Net45", "src\NetStitch.Client.Net45\NetStitch.Client.Net45.csproj", "{3D963B29-7DFA-491B-BA00-AAD5764794A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitch.Tests.ServerDefinitions", "tests\NetStitch.Tests.Server\NetStitch.Tests.ServerDefinitions.csproj", "{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProjectValueTask", "sample\SharedProjectValueTask\SharedProjectValueTask.shproj", "{AF0609D2-FC03-4EC4-8F4F-8E91D7615870}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetStitch.Swagger", "src\NetStitch.Swagger\NetStitch.Swagger.csproj", "{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStitch.Client.Net45", "src\NetStitch.Client.Net45\NetStitch.Client.Net45.csproj", "{3D963B29-7DFA-491B-BA00-AAD5764794A2}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		sample\SharedInterface\SharedInterface.projitems*{5588456e-0db2-40bd-8c38-e807bfd4d44d}*SharedItemsImports = 4
-		sample\SharedProjectValueTask\SharedProjectValueTask.projitems*{5588456e-0db2-40bd-8c38-e807bfd4d44d}*SharedItemsImports = 4
 		sample\SharedProjectValueTuple\SharedProjectValueTuple.projitems*{5c6338fa-06e1-4da0-bc63-3c9cc786eb3a}*SharedItemsImports = 13
 		tests\NetStitch.Tests.SharedProject\NetStitch.Tests.SharedProject.projitems*{725f2505-1e2a-4dda-a06e-5fe55f7bbe19}*SharedItemsImports = 13
 		sample\SharedInterface\SharedInterface.projitems*{82e7df8d-1444-4e7a-afee-33b31589240e}*SharedItemsImports = 4
@@ -173,18 +171,6 @@ Global
 		{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5}.Release|x64.Build.0 = Release|Any CPU
 		{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5}.Release|x86.Build.0 = Release|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x64.Build.0 = Debug|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Debug|x86.Build.0 = Debug|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x64.ActiveCfg = Release|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x64.Build.0 = Release|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x86.ActiveCfg = Release|Any CPU
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D}.Release|x86.Build.0 = Release|Any CPU
 		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82E7DF8D-1444-4E7A-AFEE-33B31589240E}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -221,6 +207,18 @@ Global
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}.Release|x64.Build.0 = Release|Any CPU
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}.Release|x86.ActiveCfg = Release|Any CPU
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC}.Release|x86.Build.0 = Release|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Debug|x64.Build.0 = Debug|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|x64.Build.0 = Release|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8}.Release|x86.Build.0 = Release|Any CPU
 		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D963B29-7DFA-491B-BA00-AAD5764794A2}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -249,12 +247,15 @@ Global
 		{A4D7995C-2CEF-4C76-9088-DF954A6FEDF0} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 		{F9178C43-C8E8-4727-94DD-36E1DB4EFFC5} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 		{5C6338FA-06E1-4DA0-BC63-3C9CC786EB3A} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
-		{5588456E-0DB2-40BD-8C38-E807BFD4D44D} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 		{82E7DF8D-1444-4E7A-AFEE-33B31589240E} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
 		{725F2505-1E2A-4DDA-A06E-5FE55F7BBE19} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
 		{A5564E4B-0B5B-4215-969E-B1BEC86547C9} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
 		{B7E166FE-C9E8-4493-9DAF-A874AA6D6BBC} = {B6837EBD-EC2C-4B41-96F2-14E183A858C7}
-		{3D963B29-7DFA-491B-BA00-AAD5764794A2} = {D12CF6B4-6357-4F78-95A6-3AB203C1550D}
 		{AF0609D2-FC03-4EC4-8F4F-8E91D7615870} = {EAEE55CB-C754-4522-915C-8EA3D783C242}
+		{5624A3E6-47D2-47C6-83A0-BBD66AAA86B8} = {D12CF6B4-6357-4F78-95A6-3AB203C1550D}
+		{3D963B29-7DFA-491B-BA00-AAD5764794A2} = {D12CF6B4-6357-4F78-95A6-3AB203C1550D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2148455C-F05A-4CEC-A4F1-B73523FA5D46}
 	EndGlobalSection
 EndGlobal

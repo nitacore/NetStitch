@@ -11,7 +11,6 @@ namespace NetStitch.Tests.Server
 {
     public interface IBasicParameterTest : INetStitchContract
     {
-        [NetStitch.Operation]
         ValueTask<int> BasicParameterAsync
         (
             String myString,
@@ -48,12 +47,12 @@ namespace NetStitch.Tests.Server
             DateTimeOffset[] myDateTimeOffsetArray,
             TimeSpan[] myTimeSpanArray,
             Char[] myCharArray
+
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-        );
+                    );
 
-        [NetStitch.Operation]
         ValueTask<int> BasicParameterDefaultAsync(
             String myString = "myString",
             SByte mySByte = SByte.MaxValue,
@@ -75,6 +74,6 @@ namespace NetStitch.Tests.Server
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
-        );
+                );
     }
 }

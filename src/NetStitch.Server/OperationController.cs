@@ -14,6 +14,11 @@ namespace NetStitch.Server
 {
     public class OperationController
     {
+        public override string ToString()
+        {
+            return this.InterfaceType.Name + "/" + this.MethodInfo.Name;
+        }
+
         private enum OperationType
         {
             Action = 0,
@@ -199,7 +204,8 @@ namespace NetStitch.Server
         {
             T result = await task.ConfigureAwait(false);
             HttpResponse responce = operationContext.HttpContext.Response;
-            responce.ContentType = "application/octet-stream";
+            responce.ContentType = "application/x-msgpack";
+            responce.Headers.Add("Content-Encording", "lz4");
             responce.StatusCode = HttpStatus.OK;
             LZ4MessagePackSerializer.Serialize<T>(responce.Body, result, operationContext.FormatterResolver);
         }

@@ -67,7 +67,7 @@ namespace NetStitch.Tests
     {
         public async ValueTask<int> NullableParameterTest1Async(string myString, sbyte? mySByte, byte? myByte, short? myInt16, int? myInt32, long? myInt64, ushort? myUInt16, uint? myUInt32, ulong? myUInt64, float? mySingle, double? myDouble, decimal? myDecimal, bool? myBoolean, DateTime? myDateTime, DateTimeOffset? myDateTimeOffset, TimeSpan? myTimeSpan, char? myChar)
         {
-            Assert.Equal(myString, "myString");
+            Assert.Equal("myString", myString);
             Assert.Equal(mySByte, sbyte.MaxValue);
             Assert.Equal(myByte, byte.MaxValue);
             Assert.Equal(myInt16, short.MaxValue);
@@ -79,11 +79,11 @@ namespace NetStitch.Tests
             Assert.Equal(mySingle, float.MaxValue);
             Assert.Equal(myDouble, double.MaxValue);
             Assert.Equal(myDecimal, decimal.MaxValue);
-            Assert.Equal(myBoolean, true);
+            Assert.True(myBoolean);
             Assert.Equal(myDateTime, new DateTime(2000, 1, 1).ToUniversalTime());
             Assert.Equal(myDateTimeOffset, DateTimeOffset.MaxValue);
             Assert.Equal(myTimeSpan, new TimeSpan(1, 1, 1, 1, 1));
-            Assert.Equal(myChar, 'c');
+            Assert.Equal('c', myChar);
             return 0;
         }
         public async ValueTask<int> NullableParameterTest2Async(string myString, sbyte? mySByte, byte? myByte, short? myInt16, int? myInt32, long? myInt64, ushort? myUInt16, uint? myUInt32, ulong? myUInt64, float? mySingle, double? myDouble, decimal? myDecimal, bool? myBoolean, DateTime? myDateTime, DateTimeOffset? myDateTimeOffset, TimeSpan? myTimeSpan, char? myChar)
@@ -109,7 +109,7 @@ namespace NetStitch.Tests
         }
         public async ValueTask<int> NullableParameterTest3Async(string myString = "myString", sbyte? mySByte = sbyte.MaxValue, byte? myByte = 255, short? myInt16 = short.MaxValue, int? myInt32 = int.MaxValue, long? myInt64 = long.MaxValue, ushort? myUInt16 = ushort.MaxValue, uint? myUInt32 = uint.MaxValue, ulong? myUInt64 = ulong.MaxValue, float? mySingle = float.MaxValue, double? myDouble = double.MaxValue, decimal? myDecimal = decimal.MaxValue, bool? myBoolean = true, DateTime? myDateTime = default(DateTime?), DateTimeOffset? myDateTimeOffset = default(DateTimeOffset?), TimeSpan? myTimeSpan = default(TimeSpan?), char? myChar = 'c')
         {
-            Assert.Equal(myString, "myString");
+            Assert.Equal("myString", myString);
             Assert.Equal(mySByte, sbyte.MaxValue);
             Assert.Equal(myByte, byte.MaxValue);
             Assert.Equal(myInt16, short.MaxValue);
@@ -121,11 +121,11 @@ namespace NetStitch.Tests
             Assert.Equal(mySingle, float.MaxValue);
             Assert.Equal(myDouble, double.MaxValue);
             Assert.Equal(myDecimal, decimal.MaxValue);
-            Assert.Equal(myBoolean, true);
-            Assert.Equal(myDateTime, default(DateTime?)); //null
-            Assert.Equal(myDateTimeOffset, default(DateTimeOffset?)); //null
-            Assert.Equal(myTimeSpan, default(TimeSpan?)); //null
-            Assert.Equal(myChar, 'c');
+            Assert.True(myBoolean);
+            Assert.Equal(default(DateTime?), myDateTime); //null
+            Assert.Equal(default(DateTimeOffset?), myDateTimeOffset); //null
+            Assert.Equal(default(TimeSpan?), myTimeSpan); //null
+            Assert.Equal('c', myChar);
             return 0;
         }
     }
