@@ -1,16 +1,19 @@
 # NetStitch
-NetStitch is a Http RPC Framework built on .NetFramework/.NETCore.
-
-This Project is an Alpha Version.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/9heni02h0fmubqjb?svg=true)](https://ci.appveyor.com/project/nitacore/netstitch)
+
+NetStitch is a Http RPC Framework built on .NetFramework/.NETCore.
+
+It is provides simple and easy Http WebApi Call for C#.
+
+This Framework is composed of two projects NetStitch.Server and NetStitch.Client.
 
 ## NetStitch.Server
 
 NetStitch.Server is a Middleware of ASP.NET Core.
 
 ### Installation
-<pre>PM>Install-Package NetStitch.Server -Pre</pre>
+<pre>PM>Install-Package NetStitch.Server</pre>
 
 #### Package Structure
 <pre>
@@ -27,6 +30,7 @@ NetStitch.Server Packages
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" >
    <PropertyGroup>
     <DefineConstants>$(DefineConstants);___server___</DefineConstants>
+    <NoWarn>1998</NoWarn>
   </PropertyGroup>
 </Project>
 ```
@@ -43,25 +47,13 @@ public class Startup
 }
 ```
 
-2.Implementation of "[If Directive](https://github.com/nitacore/Readme#if-directive-approach)" Interface .
+2.Implementation of "[If Directive Approach](https://github.com/nitacore/Readme#if-directive-approach)" Interface .
 ```csharp
-    [NetStitchContract]
-    public interface Interface
+    public interface Interface : INetStitchContract
     {
-        [Operation("6484ffe7-51dc-4a63-9e3f-3582a78d4117")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        MethodAsync
-#else
-        Method
-#endif
-        ( int a, int b
+        [Operation]
+        ValueTask<int> ValueTaskMethodAsync
+        (int a, int b
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
@@ -70,7 +62,10 @@ public class Startup
     
     public class MyClass : Interface
     {
-        int Method(int a, int b) => a + b;
+        public async ValueTask<int> ValueTaskMethodAsync(int a, int b)
+        {
+            return a + b;
+        }
     }
 ```
 
@@ -78,14 +73,14 @@ public class Startup
 NetStitch.Client is a RPC Client of NetStitch.Server.
 
 ### Installation
-<pre>PM>Install-Package NetStitch.Client -Pre</pre>
+<pre>PM>Install-Package NetStitch.Client</pre>
   
 ### Usage
 ```csharp
 new NetStitch.NetStitchClient(EndPointUrl).Create<Interface>().Method(Parameter);
 ```
 
-## Exsample
+## Sample
 
 See [NetStitch-Sample-CI](https://github.com/nitacore/NetStitch-Sample-CI)
 
@@ -98,29 +93,17 @@ Original Method
 ```csharp
     public interface Interface
     {
-       int Method(int a, int b);
+        ValueTask<int> ValueTaskMethodAsync(int a, int b);
     }
 ```
 
 If Directive Approach
 ```csharp
-    [NetStitchContract]
-    public interface Interface
+    public interface Interface : INetStitchContract
     {
-        [Operation("6484ffe7-51dc-4a63-9e3f-3582a78d4117")]
-#if !___server___
-        Task<
-#endif
-        int
-#if !___server___
-        >
-#endif
-#if !___server___
-        MethodAsync
-#else
-        Method
-#endif
-        ( int a, int b
+        [Operation]
+        ValueTask<int> ValueTaskMethodAsync
+        (int a, int b
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
@@ -128,28 +111,30 @@ If Directive Approach
     }
 ```
 
-Highlight with color
-![highlight](https://cloud.githubusercontent.com/assets/12636774/22738751/0a064dc0-ee4c-11e6-9358-95b0034d5513.png)
-
 #### Pattern List
 |ReturnType| Original Method | If Directive Approach |
 |----------|---------------------------------|-------------------------------------------|
-|void      | void Method(int a, int b);      |<pre>        [Operation("a340e015-66ec-4132-a97e-684d9925abf6")]<br>#if !\_\_\_server\_\_\_<br>        Task<br>#else<br>        void<br>#endif<br>#if !\_\_\_server\_\_\_<br>        MethodAsync<br>#else<br>        Method<br>#endif<br>        ( int a, int b<br>#if !\_\_\_server\_\_\_<br>        , System.Threading.CancellationToken cancellationToken<br>         = default(System.Threading.CancellationToken)<br>#endif<br>        );|
-|T         | int Method(int a, int b);       |<pre>        [Operation("6484ffe7-51dc-4a63-9e3f-3582a78d4117")]<br>#if !\_\_\_server\_\_\_<br>        Task<<br>#endif<br>        int<br>#if !\_\_\_server\_\_\_<br>        ><br>#endif<br>#if !\_\_\_server\_\_\_<br>        MethodAsync<br>#else<br>        Method<br>#endif<br>        ( int a, int b<br>#if !\_\_\_server\_\_\_<br>        , System.Threading.CancellationToken cancellationToken<br>         = default(System.Threading.CancellationToken)<br>#endif<br>        );                                           |
-|Task      | Task Method();                  |<pre>        [Operation("f911ac4d-7014-46e5-be03-3054ce40ffa6")]<br>        Task MethodAsync(<br>#if !\_\_\_server\_\_\_<br>        System.Threading.CancellationToken cancellationToken<br>         = default(System.Threading.CancellationToken)<br>#endif<br>        );                                           |
-|Task\<T\> | Task\<int\> Method(int a, int b); |<pre>        [Operation("ee8f6781-6a83-4e1d-a9ea-8863ccf3ad6a")]<br>        Task\<int\> MethodAsync(int a, int b<br>#if !\_\_\_server\_\_\_<br>        , System.Threading.CancellationToken cancellationToken<br>         = default(System.Threading.CancellationToken)<br>#endif<br>        );                                           |
+|Task      | Task MethodAsync();                  |<pre><br>        [Operation]<br>        Task MethodAsync(int a, int b<br>#if !\_\_\_server\_\_\_<br>        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)<br>#endif<br>        );|
+|ValueTask\<T\> | ValueTask\<int\> MethodAsync(int a, int b); |<pre><br>        [Operation]<br>        ValueTask<int> MethodAsync(int a, int b<br>#if !\_\_\_server\_\_\_<br>        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)<br>#endif<br>        );|
+
+### Serializer
+Request data and Response data are serealize by [MessagePack-CSharp](https://github.com/neuecc/MessagePack-CSharp)(LZ4MessagePackSerializer).
+
+Please try to define the type according to MessagePack-CSharp rules.
 
 ### Analyzer and CodeFix
 NetStitch are Supported Analyzer and Codefix.
 
-![codefix](https://cloud.githubusercontent.com/assets/12636774/22853926/877a0e12-f0a5-11e6-9823-3c561165fdb6.gif)
+#### Usage
 
-(Although it is still incomplete)
+1.Get NetStitch.Analyzer from Nuget.
 
-### Serializer
-NetStitch is request and response are serealized by [MessagePack-CSharp](https://github.com/neuecc/MessagePack-CSharp)(LZ4MessagePackSerializer).
+<pre>PM>Install-Package NetStitch.Analyzer</pre>
 
-Please try to define the type according to MessagePack-CSharp rules.
+2.Implement INetStitchContract interface in Interface
+
+3.Select NetStitchCodefix menu item
+![codefix](https://cloud.githubusercontent.com/assets/12636774/25947216/6ca5c5a2-3689-11e7-8573-722ed9fb079e.gif)
 
 ## License
 NetStitch is licensed under MIT. Refer to LICENSE for more information.
