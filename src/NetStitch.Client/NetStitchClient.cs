@@ -51,8 +51,7 @@ namespace NetStitch
             where T : INetStitchContract
         {
             var type = typeof(T);
-            INetStitchContract result;
-            if (!operationDic.TryGetValue(type.TypeHandle, out result))
+            if (!operationDic.TryGetValue(type.TypeHandle, out INetStitchContract result))
             {
                 result = (INetStitchContract)Activator.CreateInstance(DynamicType<T>.Type, this, formatterResolver);
                 lock (operationDic)
@@ -294,12 +293,13 @@ namespace NetStitch
 
     public static class ContentHelper
     {
-        public static byte[] Empty = new byte[0];
+        public static byte[] Empty = Array.Empty<byte>();
 
         public static HttpContent CreateHttpContent(byte[] bytes)
         {
             var content = new ByteArrayContent(bytes, 0, bytes.Length);
-            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/x-msgpack");
+            content.Headers.Add("Content-Encording", "lz4");
             return content;
         }
     }

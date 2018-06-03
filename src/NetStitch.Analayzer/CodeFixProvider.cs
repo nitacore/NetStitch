@@ -37,11 +37,16 @@ namespace NetStitch.Analayzer
             var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
 
             var targetNode = root.FindNode(context.Span);
-            var method = targetNode as MethodDeclarationSyntax;
-            if (method == null) return;
 
-            var targetInterface = method.Parent as InterfaceDeclarationSyntax;
-            if (targetInterface == null) return;
+            if (!(targetNode is MethodDeclarationSyntax method))
+            {
+                return;
+            }
+
+            if (!(method.Parent is InterfaceDeclarationSyntax targetInterface))
+            {
+                return;
+            }
 
             // Register a code action that will invoke the fix.
             context.RegisterCodeFix(

@@ -13,5 +13,6 @@ namespace SharedProjectValueTuple
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
+        ValueTask<(int sum, int count)> Tally(IList<(int a, int b)> tes);
     }
 }

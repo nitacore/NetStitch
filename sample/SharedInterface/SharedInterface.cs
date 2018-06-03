@@ -17,55 +17,69 @@ namespace SharedInterface
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
+        ValueTask<DateTime> Now();
     }
 
     public interface IAsyncTest : INetStitchContract
     {
-        [NetStitch.Operation]
+        Task OutputLogAsync(string message, string message2, MyEnum e, MyEnum2 e2
+#if !___server___
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+#endif
+        );
+
         ValueTask<int> TestAsync(int a, int b
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
-    }
 
-    public interface IEcho : INetStitchContract
-    {
-        [NetStitch.Operation]
         ValueTask<int> SumAsync(int[] array
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
-        [NetStitch.Operation]
+
+        ValueTask<MyClass> EchoAsync();
+
+    }
+
+    public interface IEcho : INetStitchContract
+    {
+        ValueTask<int> SumAsync(int[] array
+#if !___server___
+        , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
+#endif
+        );
         ValueTask<MyClass> EchoAsync(string name, int x, int y, MyEnum e
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
+        ValueTask<MyClass> Echo(string name, int x, int y, MyEnum e);
+        ValueTask<int> Sum(int[] array);
     }
 
     public interface IPerf : INetStitchContract
     {
-        [NetStitch.Operation]
         ValueTask<MyClass> FooAsync(string a, int? x, int[] array
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
-        [NetStitch.Operation]
+
         ValueTask<int> HogeAsync(string a, int x, MyEnum e
 #if !___server___
         , System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
-        [NetStitch.Operation]
+
         Task FugaAsync(
 #if !___server___
         System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
 #endif
         );
-        [NetStitch.Operation]
+
         Task VoidTaskAsync(
 #if !___server___
         System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)
