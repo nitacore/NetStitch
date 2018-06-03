@@ -293,7 +293,7 @@ namespace NetStitch
 
     public static class ContentHelper
     {
-        public static byte[] Empty = new byte[0];
+        public static byte[] Empty = Array.Empty<byte>();
 
         public static HttpContent CreateHttpContent(byte[] bytes)
         {
